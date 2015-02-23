@@ -3,5 +3,5 @@ package a1;
 /**
  * Created by willk on 2/20/15.
  */
-public class Car extends Movable {
+public class Car extends Movable implements ISteerable {
 }
