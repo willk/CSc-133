@@ -1,5 +1,8 @@
 package a1;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -7,8 +10,37 @@ import java.util.Scanner;
  */
 public class GameWorld {
 
+    private int time;
+    private int lives;
+
+    private Random r;
+
+    private ArrayList<GameObject> go;
+
     public void initLayout() {
         // code here to create the initial game objects/layout.
+
+        time = 0;
+        lives = 3;
+
+        r = new Random(System.currentTimeMillis());
+
+        go = new ArrayList<GameObject>();
+
+        for (int i = 1; i < r.nextInt(4) + 4; i++) {
+            Point point = new Point(r.nextInt(1000), r.nextInt(1000));
+            go.add(new Pylon(point, i));
+            if (i == 1) go.add(new Car(point));
+        }
+
+        for (int i = 0; i < r.nextInt(2) + 2; i++)
+            go.add(new FuelCan());
+
+        go.add(new OilSlick());
+        go.add(new OilSlick());
+
+        go.add(new Bird());
+        go.add(new Bird());
     }
 
     public void accelerate() {
@@ -44,7 +76,7 @@ public class GameWorld {
          */
     }
 
-    public void oil_slick() {
+    public void oilSlick() {
         /*
          * 'o'
          * Tell the game world to add an oil slick randomly in the world.
@@ -74,7 +106,7 @@ public class GameWorld {
          */
     }
 
-    public void pickup_fuel() {
+    public void pickupFuel() {
         /*
          * 'f'
          * pretend player's car has collided with a fuel can.
@@ -84,7 +116,7 @@ public class GameWorld {
          */
     }
 
-    public void gum_up() {
+    public void gumUp() {
         /*
          * 'g'
          * pretend that a bird has flown over the player's car.
@@ -92,7 +124,7 @@ public class GameWorld {
          */
     }
 
-    public void enter_slick() {
+    public void enterSlick() {
         /*
          * 'e'
          * Tell game world player's car is in an oil slick.
@@ -100,7 +132,7 @@ public class GameWorld {
          */
     }
 
-    public void exit_slick() {
+    public void exitSlick() {
         /*
          * 'x'
          * Tell game world player's car is no longer in an oil slick.
@@ -108,7 +140,7 @@ public class GameWorld {
          */
     }
 
-    public void new_colors() {
+    public void newColors() {
         /*
          * 'n'
          * Tells the game world to generate random new colors for all objects that can change colors.
@@ -126,6 +158,7 @@ public class GameWorld {
          *  3. All movable objects are told to update their position according to their current heading and speed.
          *  4. The game clock is incremented by 1.
          */
+        time++;
     }
 
     public void display() {

@@ -1,17 +1,28 @@
 package a1;
 
+import java.awt.*;
+
 /**
  * Created by willk on 2/20/15.
  */
 public class Pylon extends Fixed {
-    private float radius;
+    private double radius;
     private int sequenceNumber;
 
-    public float getRadius() {
+    public Pylon(Point location, int number) {
+        this.setRadius(20);
+        this.setColor(Color.GRAY);
+        this.setLocation(location);
+        this.setSequenceNumber(number);
+    }
+
+    public void setColor() {};
+
+    public double getRadius() {
         return radius;
     }
 
-    public void setRadius(float radius) {
+    public void setRadius(double radius) {
         this.radius = radius;
     }
 
@@ -21,5 +32,12 @@ public class Pylon extends Fixed {
 
     public void setSequenceNumber(int sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Pylon: " + super.toString() +
+                ", radius=" + this.getRadius() +
+                ", sequenceNumber=" + this.getSequenceNumber();
     }
 }

@@ -7,8 +7,10 @@ import java.util.Scanner;
  */
 public class Game {
     private GameWorld gw;
+    private boolean valid;
 
     public Game() {
+        valid = false;
         gw = new GameWorld();
         gw.initLayout();
         play();
@@ -42,9 +44,23 @@ public class Game {
          *  q: quit game
          */
 
-        System.out.printf("Please enter a command: ");
+        String command;
         Scanner input = new Scanner(System.in);
-        String command = input.nextLine();
+
+        do {
+            System.out.printf("Please enter a command: ");
+            command = input.nextLine();
+
+            String error = "Not a valid command.";
+            if (command.length() < 1 || command.length() > 3) System.out.println(error);
+            if (command.length() > 2) {
+                if (command.charAt(0) != 'p') System.out.println(error);
+                if (command.charAt(0) == 'p' && getPylon(command) < 0) System.out.println(error);
+
+            }
+
+        } while (!valid);
+
 
         switch (command.charAt(0)) {
             case 'a':
@@ -60,29 +76,29 @@ public class Game {
                 gw.right();
                 break;
             case 'o':
-                gw.oil_slick();
+                gw.oilSlick();
                 break;
             case 'c':
                 gw.collide();
                 break;
             case 'p':
-                getPylon(command);
+                int pylon = getPylon(command);
                 gw.pylon();
                 break;
             case 'f':
-                gw.pickup_fuel();
+                gw.pickupFuel();
                 break;
             case 'g':
-                gw.gum_up();
+                gw.gumUp();
                 break;
             case 'e':
-                gw.enter_slick();
+                gw.enterSlick();
                 break;
             case 'x':
-                gw.exit_slick();
+                gw.exitSlick();
                 break;
             case 'n':
-                gw.new_colors();
+                gw.newColors();
                 break;
             case 't':
                 gw.tick();
@@ -104,10 +120,15 @@ public class Game {
     private int getPylon(String s) {
         char c;
         StringBuilder pylon = new StringBuilder();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             c = s.charAt(i);
-            if (c > '0' && c < '9')
+            if (c == 'p') {}
+            else if (c >= '0' && c <= '9')
                 pylon.append(c);
+            else {
+                pylon.replace(0, 1, String.valueOf(-1));
+                break;
+            }
         }
         return Integer.parseInt(pylon.toString());
     }
