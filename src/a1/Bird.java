@@ -2,9 +2,6 @@ package a1;
 
 import java.awt.*;
 
-/**
- * Created by willk on 2/20/15.
- */
 public class Bird extends Movable {
     int size;
 
@@ -26,6 +23,6 @@ public class Bird extends Movable {
 
     @Override
     public String toString() {
-        return super.toString() + "Bird: " + "size=" + this.getSize();
+        return "Bird: " + super.toString() + ", size=" + this.getSize();
     }
 }

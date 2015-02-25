@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-/**
- * Created by willk on 2/15/15.
- */
 public class GameWorld {
 
     private int time;
@@ -27,13 +24,13 @@ public class GameWorld {
 
         go = new ArrayList<GameObject>();
 
-        for (int i = 1; i < r.nextInt(4) + 4; i++) {
+        for (int i = 1; i < (r.nextInt(4) + 4); i++) {
             Point point = new Point(r.nextInt(1000), r.nextInt(1000));
             go.add(new Pylon(point, i));
             if (i == 1) go.add(new Car(point));
         }
 
-        for (int i = 0; i < r.nextInt(2) + 2; i++)
+        for (int i = 0; i < (r.nextInt(2) + 2); i++)
             go.add(new FuelCan());
 
         go.add(new OilSlick());
@@ -95,7 +92,7 @@ public class GameWorld {
          */
     }
 
-    public void pylon() {
+    public void pylon(int sequence) {
         /*
          * 'pXX'
          * Pretend the player's car has driven over pylon XX.
@@ -104,6 +101,9 @@ public class GameWorld {
          *  most recent pylon which the car collided with. If it is, then record in the car that the fact that the car
          *  has now reached the next sequential pylon.
          */
+        for (GameObject o: go)
+            if (o instanceof Car)
+                ((Car) o).setPylon(sequence);
     }
 
     public void pickupFuel() {
@@ -178,6 +178,8 @@ public class GameWorld {
          * 'm'
          * Tell the game world to output a map
          */
+        for (GameObject o : go)
+            System.out.println(o.toString());
 
     }
 

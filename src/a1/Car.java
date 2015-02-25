@@ -2,9 +2,6 @@ package a1;
 
 import java.awt.*;
 
-/**
- * Created by willk on 2/20/15.
- */
 public class Car extends Movable implements ISteerable {
 
     private boolean traction;
@@ -12,10 +9,12 @@ public class Car extends Movable implements ISteerable {
     private int steeringDirection;
     private int fuelLevel;
     private int maxSpeed;
+    private int pylon;
 
     private double width;
     private double length;
     private double damageLevel;
+    private double maxDamageLevel;
 
     public Car(Point location) {
         this.setSpeed(0);
@@ -24,7 +23,9 @@ public class Car extends Movable implements ISteerable {
         this.setMaxSpeed(100);
         this.setFuelLevel(100);
         this.setTraction(true);
+        this.setMaxDamageLevel(100);
 
+        this.pylon = 0;
         this.setColor();
 
         this.setWidth(10);
@@ -40,8 +41,24 @@ public class Car extends Movable implements ISteerable {
         }
     }
 
+    public int getPylon() {
+        return pylon;
+    }
+
+    public void setPylon(int pylon) {
+        this.pylon = pylon;
+    }
+
     public boolean hasTraction() {
         return traction;
+    }
+
+    public double getMaxDamageLevel() {
+        return maxDamageLevel;
+    }
+
+    public void setMaxDamageLevel(double maxDamageLevel) {
+        this.maxDamageLevel = maxDamageLevel;
     }
 
     public void setTraction(boolean traction) {
@@ -52,8 +69,10 @@ public class Car extends Movable implements ISteerable {
         return damageLevel;
     }
 
-    public void setDamageLevel(int damageLevel) {
-        this.damageLevel = damageLevel;
+    public void setDamageLevel(double damageLevel) {
+        if (this.getDamageLevel() < this.getMaxDamageLevel()) {
+            this.damageLevel += damageLevel;
+        }
     }
 
     public int getFuelLevel() {

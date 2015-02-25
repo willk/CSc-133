@@ -1,8 +1,5 @@
 package a1;
 
-/**
- * Created by willk on 2/20/15.
- */
 public class OilSlick extends Fixed {
     private double length;
     private double width;
@@ -16,7 +13,7 @@ public class OilSlick extends Fixed {
         return length;
     }
 
-    public void setLength(float length) {
+    public void setLength(double length) {
         this.length = length;
     }
 
@@ -24,7 +21,7 @@ public class OilSlick extends Fixed {
         return width;
     }
 
-    public void setWidth(float width) {
+    public void setWidth(double width) {
         this.width = width;
     }
 

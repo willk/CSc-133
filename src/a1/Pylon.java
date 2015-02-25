@@ -2,9 +2,6 @@ package a1;
 
 import java.awt.*;
 
-/**
- * Created by willk on 2/20/15.
- */
 public class Pylon extends Fixed {
     private double radius;
     private int sequenceNumber;
@@ -16,7 +13,7 @@ public class Pylon extends Fixed {
         this.setSequenceNumber(number);
     }
 
-    public void setColor() {};
+    public void setColor() {}
 
     public double getRadius() {
         return radius;

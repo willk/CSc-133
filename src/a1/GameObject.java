@@ -3,10 +3,6 @@ import java.awt.Point;
 import java.awt.Color;
 import java.util.Random;
 
-/**
- * Created by willk on 2/20/15.
- */
-
 public abstract class GameObject {
     Random r = new Random(System.currentTimeMillis());
 
@@ -18,10 +14,10 @@ public abstract class GameObject {
     }
 
     public void setLocation(Point p) {
-        this.location.setLocation(p);
+        this.location = p;
     }
 
-    public void setLocation(float x, float y) {
+    public void setLocation(double x, double y) {
         this.location.setLocation(x, y);
     }
 
@@ -43,7 +39,7 @@ public abstract class GameObject {
 
     @Override
     public String toString() {
-        return ", location=" + this.getLocation() +
+        return "location=" + this.getLocation() +
                 ", color=" + this.getColor();
     }
 }

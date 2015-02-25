@@ -1,10 +1,5 @@
 package a1;
 
-import java.util.Random;
-
-/**
- * Created by willk on 2/20/15.
- */
 public class FuelCan extends Fixed {
     private int size;
 
@@ -21,6 +16,6 @@ public class FuelCan extends Fixed {
     @Override
     public String toString() {
         return "FuelCan: " + super.toString() +
-                "size=" + this.getSize();
+                ", size=" + this.getSize();
     }
 }

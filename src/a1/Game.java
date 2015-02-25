@@ -2,15 +2,11 @@ package a1;
 
 import java.util.Scanner;
 
-/**
- * Created by willk on 2/15/15.
- */
 public class Game {
     private GameWorld gw;
     private boolean valid;
 
     public Game() {
-        valid = false;
         gw = new GameWorld();
         gw.initLayout();
         play();
@@ -45,21 +41,24 @@ public class Game {
          */
 
         String command;
+        String error = "Not a valid command.";
+
+        System.out.printf("Please enter a command: ");
         Scanner input = new Scanner(System.in);
 
         do {
-            System.out.printf("Please enter a command: ");
+            setValid(false);
             command = input.nextLine();
 
-            String error = "Not a valid command.";
             if (command.length() < 1 || command.length() > 3) System.out.println(error);
             if (command.length() > 2) {
                 if (command.charAt(0) != 'p') System.out.println(error);
                 if (command.charAt(0) == 'p' && getPylon(command) < 0) System.out.println(error);
 
             }
+            setValid(true);
 
-        } while (!valid);
+        } while (!isValid());
 
 
         switch (command.charAt(0)) {
@@ -82,8 +81,7 @@ public class Game {
                 gw.collide();
                 break;
             case 'p':
-                int pylon = getPylon(command);
-                gw.pylon();
+                gw.pylon(getPylon(command));
                 break;
             case 'f':
                 gw.pickupFuel();
@@ -113,8 +111,17 @@ public class Game {
                 gw.quit();
                 break;
             default:
+                System.out.println(error);
                 break;
         }
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 
     private int getPylon(String s) {
