@@ -5,7 +5,7 @@ public abstract class Movable extends GameObject {
     private double speed;
     private double heading;
 
-    public void move() {}
+    public abstract void move();
 
     public double getSpeed() {
         return speed;
@@ -19,8 +19,8 @@ public abstract class Movable extends GameObject {
         return heading;
     }
 
-    public void setHeading(float heading) {
-        this.heading = heading;
+    public void setHeading(double heading) {
+        this.heading = (heading % 360 + 360) % 360;
     }
 
     @Override

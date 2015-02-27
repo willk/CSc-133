@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 public class Game {
     private GameWorld gw;
-    private boolean valid;
 
     public Game() {
         gw = new GameWorld();
@@ -45,20 +44,25 @@ public class Game {
 
         System.out.printf("Please enter a command: ");
         Scanner input = new Scanner(System.in);
-
+        boolean valid;
         do {
-            setValid(false);
+            valid = true;
             command = input.nextLine();
 
-            if (command.length() < 1 || command.length() > 3) System.out.println(error);
-            if (command.length() > 2) {
-                if (command.charAt(0) != 'p') System.out.println(error);
-                if (command.charAt(0) == 'p' && getPylon(command) < 0) System.out.println(error);
-
+            if (command.length() < 1 || command.length() > 3) valid = false;
+            if (command.length() == 1 && command.charAt(0) == 'p')
+                valid = false;
+            if (command.length() > 1) {
+                if (command.charAt(0) != 'p') valid = false;
+                if (command.charAt(0) == 'p' && getPylonNumber(command) < 0)
+                    valid = false;
             }
-            setValid(true);
+            if (!valid) {
+                System.out.println(error);
+                System.out.println("Please enter a command: ");
+            }
 
-        } while (!isValid());
+        } while (!valid);
 
 
         switch (command.charAt(0)) {
@@ -81,7 +85,7 @@ public class Game {
                 gw.collide();
                 break;
             case 'p':
-                gw.pylon(getPylon(command));
+                gw.pylon(getPylonNumber(command));
                 break;
             case 'f':
                 gw.pickupFuel();
@@ -116,27 +120,7 @@ public class Game {
         }
     }
 
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
-
-    private int getPylon(String s) {
-        char c;
-        StringBuilder pylon = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
-            c = s.charAt(i);
-            if (c == 'p') {}
-            else if (c >= '0' && c <= '9')
-                pylon.append(c);
-            else {
-                pylon.replace(0, 1, String.valueOf(-1));
-                break;
-            }
-        }
-        return Integer.parseInt(pylon.toString());
+    private int getPylonNumber(String s) {
+        return Integer.parseInt(s.replaceAll("[\\D]", ""));
     }
 }

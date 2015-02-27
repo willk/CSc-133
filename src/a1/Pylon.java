@@ -13,7 +13,8 @@ public class Pylon extends Fixed {
         this.setSequenceNumber(number);
     }
 
-    public void setColor() {}
+    public void setColor() {
+    }
 
     public double getRadius() {
         return radius;

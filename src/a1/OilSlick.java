@@ -1,10 +1,14 @@
 package a1;
 
+import java.awt.*;
+
 public class OilSlick extends Fixed {
     private double length;
     private double width;
 
     public OilSlick() {
+        this.setColor(Color.black);
+        this.setLocation();
         this.width = r.nextInt(45) + 10;
         this.length = r.nextInt(45) + 10;
     }
@@ -13,16 +17,8 @@ public class OilSlick extends Fixed {
         return length;
     }
 
-    public void setLength(double length) {
-        this.length = length;
-    }
-
     public double getWidth() {
         return width;
-    }
-
-    public void setWidth(double width) {
-        this.width = width;
     }
 
     @Override

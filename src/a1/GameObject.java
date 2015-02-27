@@ -1,10 +1,10 @@
 package a1;
-import java.awt.Point;
-import java.awt.Color;
+
+import java.awt.*;
 import java.util.Random;
 
 public abstract class GameObject {
-    Random r = new Random(System.currentTimeMillis());
+    Random r = new Random(System.nanoTime());
 
     private Point location;
     private Color color;
@@ -17,20 +17,20 @@ public abstract class GameObject {
         this.location = p;
     }
 
-    public void setLocation(double x, double y) {
-        this.location.setLocation(x, y);
+    public void setLocation() {
+        this.location = new Point(r.nextInt(1000), r.nextInt(1000));
     }
 
     public Color getColor() {
         return color;
     }
 
-    public void setColor() {
-        this.color = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
-    }
-
     public void setColor(Color c) {
         this.color = c;
+    }
+
+    public void setColor() {
+        this.color = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
     }
 
     public void setColor(int r, int g, int b) {

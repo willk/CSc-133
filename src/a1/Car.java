@@ -7,6 +7,7 @@ public class Car extends Movable implements ISteerable {
     private boolean traction;
 
     private int steeringDirection;
+    private int maxFuelLevel;
     private int fuelLevel;
     private int maxSpeed;
     private int pylon;
@@ -22,6 +23,7 @@ public class Car extends Movable implements ISteerable {
         this.setDamageLevel(0);
         this.setMaxSpeed(100);
         this.setFuelLevel(100);
+        this.setMaxFuelLevel(100);
         this.setTraction(true);
         this.setMaxDamageLevel(100);
 
@@ -37,8 +39,16 @@ public class Car extends Movable implements ISteerable {
     @Override
     public void move() {
         if (this.hasTraction()) {
-
+            this.setHeading(this.getHeading() + this.getSteeringDirection());
         }
+        double theta = Math.toRadians(90 - getHeading());
+        double dx = Math.cos(theta) * this.getSpeed();
+        double dy = Math.sin(theta) * this.getSpeed();
+
+        Point p = this.getLocation();
+        p.translate((int) dx, (int) dy);
+        this.setLocation(p);
+        this.setFuelLevel(this.getFuelLevel() - 1);
     }
 
     public int getPylon() {
@@ -46,7 +56,8 @@ public class Car extends Movable implements ISteerable {
     }
 
     public void setPylon(int pylon) {
-        this.pylon = pylon;
+        if ((getPylon() + 1) == pylon)
+            this.pylon = pylon;
     }
 
     public boolean hasTraction() {
@@ -69,11 +80,15 @@ public class Car extends Movable implements ISteerable {
         return damageLevel;
     }
 
-    public void setDamageLevel(double damageLevel) {
-        if (this.getDamageLevel() < this.getMaxDamageLevel()) {
-            this.damageLevel += damageLevel;
-        }
+    public void setDamageLevel(double damage) {
+        this.damageLevel = damage;
     }
+//
+//    public void setDamageLevel(double damage) {
+//        if (this.getDamageLevel() < this.getMaxDamageLevel()) {
+//            this.damageLevel += damage;
+//        }
+//    }
 
     public int getFuelLevel() {
         return fuelLevel;
@@ -103,7 +118,7 @@ public class Car extends Movable implements ISteerable {
         return width;
     }
 
-    public void setWidth(float width) {
+    public void setWidth(double width) {
         this.width = width;
     }
 
@@ -111,38 +126,79 @@ public class Car extends Movable implements ISteerable {
         return length;
     }
 
-    public void setLength(float length) {
+    public void setLength(double length) {
         this.length = length;
+    }
+
+    public int getMaxFuelLevel() {
+        return maxFuelLevel;
+    }
+
+    public void setMaxFuelLevel(int maxFuelLevel) {
+        this.maxFuelLevel = maxFuelLevel;
     }
 
     @Override
     public void setSpeed(double speed) {
-        if (this.getSpeed() < this.getMaxSpeed()) {
-            super.setSpeed(this.getSpeed() + speed);
-        }
+        if (this.getSpeed() >= 0)
+            if ((this.getSpeed() < this.getMaxSpeed()) && this.hasTraction())
+                super.setSpeed(this.getSpeed() + speed);
+        if (this.getSpeed() < 0)
+            super.setSpeed(0);
+
     }
 
     @Override
     public void steerRight() {
         if (this.getSteeringDirection() < 40)
-        this.setSteeringDirection(getSteeringDirection() + 5);
-
+            this.setSteeringDirection(getSteeringDirection() + 5);
     }
 
     @Override
     public void steerLeft() {
-        if (this.getSteeringDirection() < -40)
+        if (this.getSteeringDirection() > -40)
             this.setSteeringDirection(getSteeringDirection() - 5);
     }
 
     @Override
     public String toString() {
         return "Car: " + super.toString() +
+                ", pylon=" + this.getPylon() +
+                ", traction=" + this.hasTraction() +
                 ", steeringDirection=" + this.getSteeringDirection() +
                 ", damageLevel=" + this.getDamageLevel() +
                 ", fuelLevel=" + this.getFuelLevel() +
                 ", maxSpeed=" + this.getMaxSpeed() +
                 ", width=" + this.getWidth() +
                 ", length=" + this.getLength();
+    }
+
+    public boolean hit(int damage) {
+        // check to see if the car will exceed its maximum damage.
+        if ((getDamageLevel() + damage) < (getMaxDamageLevel())) {
+            this.setDamageLevel(this.getDamageLevel() + damage);
+            this.setMaxSpeed(this.getMaxSpeed() - damage);
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    public void addFuel(int fuel) {
+        if (this.getFuelLevel() < this.getMaxFuelLevel())
+            if ((this.getFuelLevel() + fuel) > this.getMaxFuelLevel())
+                this.setFuelLevel(this.getMaxFuelLevel());
+            else
+                this.setFuelLevel(this.getFuelLevel() + fuel);
+    }
+
+    public void reset() {
+        this.setTraction(true);
+        this.setFuelLevel(100);
+        this.setDamageLevel(0);
+        this.setSpeed(0);
+        this.setHeading(0);
+        this.setMaxSpeed(100);
     }
 }

@@ -6,6 +6,7 @@ public class FuelCan extends Fixed {
     public FuelCan() {
         // When instantiating a fuel can make sure th value is between %5 and %30
         this.setColor();
+        this.setLocation();
         this.size = r.nextInt(25) + 5;
     }
 
