@@ -13,9 +13,9 @@ public class Game extends JPanel {
         gw = new GameWorld();
         sv = new ScoreView();
         mv = new MapView();
+        gw.initLayout();
         gw.addObserver(sv);
         gw.addObserver(mv);
-        gw.initLayout();
         play();
     }
 
