@@ -4,22 +4,31 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.Scanner;
 
 public class GameWorld implements IObservable {
 
     private int time;
     private int lives;
+    private boolean sound;
     private ArrayList<IObserver> observers;
-    private Random r;
     private GameCollection go;
+
+    public boolean hasSound() {
+        return sound;
+    }
+
+    public void setSound(boolean sound) {
+        this.sound = sound;
+        notifyObservers();
+    }
 
     public void initLayout() {
 
         time = 0;
         lives = 3;
+        sound = false;
 
-        r = new Random(System.nanoTime());
+        Random r = new Random(System.nanoTime());
 
         go = new GameCollection();
         observers = new ArrayList<IObserver>();
@@ -74,10 +83,11 @@ public class GameWorld implements IObservable {
          * Change the steering direction of the car 5 degrees left.
          * Changes the direction of the car's steering wheel (not heading), does not immediately affect car's heading.
          */
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if (iterator instanceof Player)
-                ((Player) iterator).steerLeft();
+        GameObject o;
+        Iterator i = go.iterator();
+        while (i.hasNext())
+            if ((o = (GameObject) i.next()) instanceof Player)
+                ((Player) o).steerLeft();
     }
 
     public void right() {
@@ -86,13 +96,14 @@ public class GameWorld implements IObservable {
          * Change the steering direction of the car 5 degrees right.
          * Changes the direction of the car's steering wheel (not heading), does not immediately affect car's heading.
          */
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if (iterator instanceof Player)
-                ((Player) iterator).steerRight();
+        GameObject o;
+        Iterator i = go.iterator();
+        while (i.hasNext())
+            if ((o = (GameObject) i.next()) instanceof Player)
+                ((Player) o).steerRight();
     }
 
-    public void oilSlick() {
+    public void addOilSlick() {
         /*
          * 'o'
          * Tell the game world to add an oil slick randomly in the world.
@@ -111,10 +122,11 @@ public class GameWorld implements IObservable {
          *  decreases.
          */
 
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if (iterator instanceof Player) {
-                if (((Player) iterator).hit(this.getCarHitCost()))
+        GameObject o;
+        Iterator i = go.iterator();
+        while (i.hasNext())
+            if ((o = (GameObject) i.next()) instanceof Player) {
+                if (((Player) o).hit(this.getCarHitCost()))
                     this.lostLife();
                 break;
             }
@@ -129,10 +141,12 @@ public class GameWorld implements IObservable {
         if (this.getLives() > 0) {
             this.setLives(this.getLives() - 1);
 
-            Iterator iterator = go.iterator();
-            while (iterator.hasNext())
-                if (iterator.next() instanceof Player) {
-                    ((Player) iterator).reset();
+            GameObject o;
+            Iterator i = go.iterator();
+
+            while (i.hasNext())
+                if ((o = (GameObject) i.next()) instanceof Player) {
+                    ((Player) o).reset();
                     break;
                 }
         } else if (this.getLives() <= 0) {
@@ -147,7 +161,7 @@ public class GameWorld implements IObservable {
 
     public void setLives(int lives) {
         this.lives = lives;
-        notifyObserver();
+        notifyObservers();
     }
 
     public void pylon(int sequence) {
@@ -159,10 +173,13 @@ public class GameWorld implements IObservable {
          *  most recent pylon which the car collided with. If it is, then record in the car that the fact that the car
          *  has now reached the next sequential pylon.
          */
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if (iterator instanceof Player)
-                ((Player) iterator).setPylon(sequence);
+        GameObject o;
+        Iterator i = go.iterator();
+
+        while (i.hasNext())
+            if ((o = (GameObject) (i.next())) instanceof Player)
+                ((Player) o).setPylon(sequence);
+        notifyObservers();
     }
 
     public void pickupFuel() {
@@ -176,14 +193,12 @@ public class GameWorld implements IObservable {
         FuelCan f = null;
         GameObject o = null;
         Iterator iterator = go.iterator();
-        while (iterator.hasNext()) {
-            o = (GameObject) (iterator.next());
-            if (o instanceof FuelCan) {
+        while (iterator.hasNext())
+            if ((o = (GameObject) iterator.next()) instanceof FuelCan) {
                 f = (FuelCan) o;
                 go.remove(o);
                 break;
             }
-        }
 
         if (f != null) {
             iterator = go.iterator();
@@ -194,6 +209,7 @@ public class GameWorld implements IObservable {
         }
 
         go.add(new FuelCan());
+        notifyObservers();
     }
 
     public void hitBird() {
@@ -205,13 +221,14 @@ public class GameWorld implements IObservable {
         Iterator iterator = go.iterator();
         GameObject o;
         while (iterator.hasNext()) {
-            o = (GameObject) (iterator.next());
-            if (o instanceof Player) {
+            if ((o = (GameObject) iterator.next()) instanceof Player) {
                 if (((Player) o).hit(this.getBirdHitCost()))
                     this.lostLife();
                 break;
             }
         }
+
+        notifyObservers();
     }
 
     public int getBirdHitCost() {
@@ -225,10 +242,12 @@ public class GameWorld implements IObservable {
          * Tell game world player's car is in an oil slick.
          * The game world should set a flag in the player's car indicating it is in an oil slick.
          */
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if (iterator instanceof Player)
-                ((Player) iterator).setTraction(false);
+        GameObject o;
+        Iterator i = go.iterator();
+        while (i.hasNext())
+            if ((o = (GameObject) i.next()) instanceof Player)
+                ((Player) o).setTraction(false);
+        notifyObservers();
     }
 
     public void exitSlick() {
@@ -237,10 +256,12 @@ public class GameWorld implements IObservable {
          * Tell game world player's car is no longer in an oil slick.
          * The game world should clear the flag it created when car entered the slick.
          */
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if (iterator instanceof Player)
-                ((Player) iterator).setTraction(true);
+        GameObject o;
+        Iterator i = go.iterator();
+        while (i.hasNext())
+            if ((o = (GameObject) i.next()) instanceof Player)
+                ((Player) i).setTraction(true);
+        notifyObservers();
     }
 
     public void newColors() {
@@ -248,9 +269,10 @@ public class GameWorld implements IObservable {
          * 'n'
          * Tells the game world to generate random new colors for all objects that can change colors.
          */
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            ((GameObject) (iterator.next())).setColor();
+        Iterator i = go.iterator();
+        while (i.hasNext())
+            ((GameObject) i.next()).setColor();
+        notifyObservers();
     }
 
     public void tick() {
@@ -265,10 +287,10 @@ public class GameWorld implements IObservable {
          *  4. The game clock is incremented by 1.
          */
         time++;
-        Iterator iterator = go.iterator();
         GameObject o;
+        Iterator iterator = go.iterator();
         while (iterator.hasNext()) {
-            o = (GameObject) (iterator.next());
+            o = (GameObject) iterator.next();
             if (o instanceof Movable)
                 ((Movable) o).move();
             if (o instanceof Player)
@@ -277,7 +299,7 @@ public class GameWorld implements IObservable {
                 else if (((Player) o).getMaxSpeed() == 0)
                     this.lostLife();
         }
-        notifyObserver();
+        notifyObservers();
 
     }
 
@@ -291,17 +313,15 @@ public class GameWorld implements IObservable {
          * 4. car's current fuel and damage level
          */
 
-        Player player = null;
-        Iterator iterator = go.iterator();
         GameObject o;
+        Player player = null;
+        Iterator i = go.iterator();
 
-        while (iterator.hasNext()) {
-            o = (GameObject) (iterator.next());
-            if (o instanceof Player) {
+        while (i.hasNext())
+            if ((o = (GameObject) i.next()) instanceof Player) {
                 player = (Player) o;
                 break;
             }
-        }
 
         System.out.println("Lives left: " + this.lives);
         System.out.println("Clock: " + this.time);
@@ -315,7 +335,7 @@ public class GameWorld implements IObservable {
          * 'm'
          * Tell the game world to output a map
          */
-        notifyObserver();
+        notifyObservers();
     }
 
     public void quit() {
@@ -325,21 +345,7 @@ public class GameWorld implements IObservable {
          * Confirm exit prior to quiting.
          */
 
-        System.out.printf("Quit? y/[n]: ");
-
-        Scanner input = new Scanner(System.in);
-        String command = input.nextLine().toLowerCase();
-        while (true) {
-            if (command.charAt(0) == 'y' || command.charAt(0) == 'n')
-                break;
-            System.out.println("Invalid command.");
-            System.out.println("Quit? y/[n]");
-            command = input.nextLine().toLowerCase();
-        }
-        if (command.charAt(0) == 'y') {
-            System.out.println("Goodbye");
-            System.exit(0);
-        }
+        System.exit(0);
     }
 
     public GameCollection getGameCollection() {
@@ -352,7 +358,7 @@ public class GameWorld implements IObservable {
     }
 
     @Override
-    public void notifyObserver() {
+    public void notifyObservers() {
         for (IObserver o : observers)
             o.update(this);
     }
@@ -362,5 +368,16 @@ public class GameWorld implements IObservable {
     }
 
     public void changeStrategies() {
+    }
+
+    public int getHighestPylon() {
+        int pylon = -1;
+        GameObject o;
+        Iterator i = go.iterator();
+        while (i.hasNext()) {
+            if ((o = (GameObject) i.next()) instanceof Player)
+                pylon = ((Player) o).getPylon();
+        }
+        return pylon;
     }
 }

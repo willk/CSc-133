@@ -27,7 +27,7 @@ public class Car extends Movable implements ISteerable {
         this.setTraction(true);
         this.setMaxDamageLevel(100);
 
-        this.pylon = 0;
+        this.pylon = 1;
         this.setColor();
 
         this.setWidth(10);
@@ -50,10 +50,6 @@ public class Car extends Movable implements ISteerable {
 
     public void setMaxSpeed(int maxSpeed) {
         this.maxSpeed = maxSpeed;
-    }
-
-    public int getPylon() {
-        return pylon;
     }
 
     @Override
@@ -79,11 +75,6 @@ public class Car extends Movable implements ISteerable {
         return fuelLevel;
     }
 
-    public void setPylon(int pylon) {
-        if ((getPylon() + 1) == pylon)
-            this.pylon = pylon;
-    }
-
     public void setFuelLevel(int fuelLevel) {
         this.fuelLevel = fuelLevel;
     }
@@ -105,14 +96,15 @@ public class Car extends Movable implements ISteerable {
                 ", length=" + this.getLength();
     }
 
-    @Override
-    public void setSpeed(double speed) {
-        if (this.getSpeed() >= 0)
-            if ((this.getSpeed() < this.getMaxSpeed()) && this.hasTraction())
-                super.setSpeed(this.getSpeed() + speed);
-        if (this.getSpeed() < 0)
-            super.setSpeed(0);
+    public int getPylon() {
+        return pylon;
+    }
 
+    public void setPylon(int pylon) {
+        System.out.println("Setting Pylon");
+        if ((getPylon() + 1) == pylon)
+            this.pylon = pylon;
+        System.out.println("Done setting Pylon.");
     }
 
     public double getDamageLevel() {
@@ -137,6 +129,16 @@ public class Car extends Movable implements ISteerable {
 
     public void setLength(double length) {
         this.length = length;
+    }
+
+    @Override
+    public void setSpeed(double speed) {
+        if (this.getSpeed() >= 0)
+            if ((this.getSpeed() < this.getMaxSpeed()) && this.hasTraction())
+                super.setSpeed(this.getSpeed() + speed);
+        if (this.getSpeed() < 0)
+            super.setSpeed(0);
+
     }
 
     @Override

@@ -6,5 +6,5 @@ package a2;
 public interface IObservable {
     public void addObserver(IObserver o);
 
-    public void notifyObserver();
+    public void notifyObservers();
 }

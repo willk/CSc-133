@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.util.Iterator;
 
 /**
- * Created by William Kinderman on 3/14/15.
+ * Created by William Kinderman on 3/14/15, 6:44 PM.
  */
 public class ScoreView extends JPanel implements IObserver {
     private JLabel time, damage, lives, sound, pylon, fuel;
@@ -40,5 +40,6 @@ public class ScoreView extends JPanel implements IObserver {
             if (go instanceof Player)
                 pylon.setText("Current Pylon: " + ((Player) go).getPylon());
         }
+        sound.setText("Sound: " + (gw.hasSound() ? "On" : "Off"));
     }
 }

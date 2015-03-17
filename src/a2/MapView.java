@@ -5,7 +5,7 @@ import java.awt.*;
 import java.util.Iterator;
 
 /**
- * Created by William Kinderman on 3/14/15.
+ * Created by William Kinderman on 3/14/15, 6:45 PM, 6:45 PM.
  */
 public class MapView extends JPanel implements IObserver {
     public MapView() {

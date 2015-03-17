@@ -52,6 +52,7 @@ public class Game extends JFrame implements ActionListener {
 
         fMSound = new JCheckBoxMenuItem("Sound");
         fMSound.setMnemonic('S');
+        fMSound.addActionListener(this);
         fileMenu.add(fMSound);
 
         fMSave = new JMenuItem("Save");
@@ -114,7 +115,7 @@ public class Game extends JFrame implements ActionListener {
         wPQuit.addActionListener(this);
 
         west.add(wPCollideNPC);
-        west.add(wPCollideNPC);
+        west.add(wPCollidePylon);
         west.add(wPCollideBird);
         west.add(wPFuel);
         west.add(wPEnterSlick);
@@ -128,19 +129,29 @@ public class Game extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == fMSound) {
+            gw.setSound(fMSound.getState());
+        }
+        if (e.getSource() == fMSlick)
+            gw.addOilSlick();
         if (e.getSource() == fMAbout)
             showAbout(e);
         if (e.getSource() == fMQuit || e.getSource() == wPQuit)
             if (e.getSource() == wPQuit || showQuitDialog(e))
-                System.exit(0);
+                gw.quit();
         if (e.getSource() == fMColor)
             gw.newColors();
         if (e.getSource() == fMFuel || e.getSource() == wPFuel)
             gw.pickupFuel();
         if (e.getSource() == wPCollideNPC)
             gw.collide();
-        if (e.getSource() == wPCollidePylon)
-            gw.pylon(showGetPylon());
+
+        // Collide with a Pylon.
+        if (e.getSource() == wPCollidePylon) {
+            gw.pylon(showGetPylonDialog(e));
+        }
+
+        // Collide with a bird.
         if (e.getSource() == wPCollideBird)
             gw.hitBird();
         if (e.getSource() == wPEnterSlick)
@@ -155,7 +166,7 @@ public class Game extends JFrame implements ActionListener {
 
     private void showAbout(ActionEvent e) {
         final String info = "Race Car Game Extreme\n" +
-                "Version" + version + "\n" +
+                "Version: " + version + "\n" +
                 "Created by: William Kinderman\n" +
                 "CSc 133, Dr. John Clevenger\n" +
                 "California State University, Sacramento";
@@ -180,8 +191,20 @@ public class Game extends JFrame implements ActionListener {
         return dialog == 0;
     }
 
-    private int showGetPylon() {
+    private int showGetPylonDialog(ActionEvent e) {
         // TODO: write code to print get pylon
-        return 0;
+
+        int pylon = gw.getHighestPylon();
+        String newPylon = Integer.toString(pylon);
+        try {
+            newPylon = JOptionPane.showInputDialog(
+                    (Component) e.getSource(),
+                    "Enter a pylon number.",
+                    pylon
+            );
+        } catch (NumberFormatException error) {
+
+        }
+        return Integer.parseInt(newPylon);
     }
 }
