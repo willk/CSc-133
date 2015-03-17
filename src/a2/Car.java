@@ -101,10 +101,8 @@ public class Car extends Movable implements ISteerable {
     }
 
     public void setPylon(int pylon) {
-        System.out.println("Setting Pylon");
         if ((getPylon() + 1) == pylon)
             this.pylon = pylon;
-        System.out.println("Done setting Pylon.");
     }
 
     public double getDamageLevel() {
