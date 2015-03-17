@@ -303,41 +303,6 @@ public class GameWorld implements IObservable {
 
     }
 
-    public void display() {
-        /*
-         * 'd'
-         * Generate a display by outputting lines of text on the console describing the current game state values.
-         * 1. Number of lives left
-         * 2. Current clock value
-         * 3. Highest sequential pylon value reached
-         * 4. car's current fuel and damage level
-         */
-
-        GameObject o;
-        Player player = null;
-        Iterator i = go.iterator();
-
-        while (i.hasNext())
-            if ((o = (GameObject) i.next()) instanceof Player) {
-                player = (Player) o;
-                break;
-            }
-
-        System.out.println("Lives left: " + this.lives);
-        System.out.println("Clock: " + this.time);
-        System.out.println("Highest Pylon: " + player.getPylon());
-        System.out.printf("Player's fuel: %d, damage: %d\n", player.getFuelLevel(), (int) player.getDamageLevel());
-
-    }
-
-    public void map() {
-        /*
-         * 'm'
-         * Tell the game world to output a map
-         */
-        notifyObservers();
-    }
-
     public void quit() {
         /*
          * 'q'
