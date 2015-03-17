@@ -15,11 +15,6 @@ public class GameCollection implements ICollection {
     }
 
     @Override
-    public void remove(GameObject o) {
-        go.remove(o);
-    }
-
-    @Override
     public int size() {
         return go.size();
     }
@@ -27,6 +22,11 @@ public class GameCollection implements ICollection {
     @Override
     public void add(GameObject o) {
         go.add(o);
+    }
+
+    @Override
+    public void remove(GameObject o) {
+        go.remove(o);
     }
 
     @Override

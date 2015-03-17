@@ -16,6 +16,13 @@ public class Pylon extends Fixed {
     public void setColor() {
     }
 
+    @Override
+    public String toString() {
+        return "Pylon: " + super.toString() +
+                ", radius=" + this.getRadius() +
+                ", sequenceNumber=" + this.getSequenceNumber();
+    }
+
     public double getRadius() {
         return radius;
     }
@@ -30,12 +37,5 @@ public class Pylon extends Fixed {
 
     public void setSequenceNumber(int sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
-    }
-
-    @Override
-    public String toString() {
-        return "Pylon: " + super.toString() +
-                ", radius=" + this.getRadius() +
-                ", sequenceNumber=" + this.getSequenceNumber();
     }
 }

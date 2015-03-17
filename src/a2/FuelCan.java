@@ -10,13 +10,13 @@ public class FuelCan extends Fixed {
         this.size = r.nextInt(25) + 5;
     }
 
-    public int getSize() {
-        return size;
-    }
-
     @Override
     public String toString() {
         return "FuelCan: " + super.toString() +
                 ", size=" + this.getSize();
+    }
+
+    public int getSize() {
+        return size;
     }
 }

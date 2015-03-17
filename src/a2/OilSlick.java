@@ -13,18 +13,18 @@ public class OilSlick extends Fixed {
         this.length = r.nextInt(45) + 10;
     }
 
+    @Override
+    public String toString() {
+        return "OilSlick: " + super.toString() +
+                ", length=" + this.getLength() +
+                ", width=" + this.getWidth();
+    }
+
     public double getLength() {
         return length;
     }
 
     public double getWidth() {
         return width;
-    }
-
-    @Override
-    public String toString() {
-        return "OilSlick: " + super.toString() +
-                ", length=" + this.getLength() +
-                ", width=" + this.getWidth();
     }
 }

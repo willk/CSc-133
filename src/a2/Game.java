@@ -7,13 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Game extends JFrame implements ActionListener {
-    private final String version = "2.0";
+    final String version = "2.0";
     private GameWorld gw;
     private ScoreView sv;
     private MapView mv;
 
-    private JMenuItem jMNew, jMSave, jMAbout, jMQuit, jMSlick, jMFuel, jMColor;
-    private JCheckBoxMenuItem jCMSound;
+    private JMenuItem fMNew, fMSave, fMAbout, fMQuit, fMSlick, fMFuel, fMColor;
+    private JCheckBoxMenuItem fMSound;
+    private JButton wPCollideNPC, wPCollidePylon, wPCollideBird, wPFuel, wPEnterSlick, wPExitSlick, wPStrat, wPTick, wPQuit;
 
 
     public Game() {
@@ -30,7 +31,7 @@ public class Game extends JFrame implements ActionListener {
         setTitle("Race Car Game Extreme");
         setSize(1000, 800);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         setJMenuBar(bar);
         this.add(sv, BorderLayout.NORTH);
@@ -41,68 +42,115 @@ public class Game extends JFrame implements ActionListener {
 
     }
 
-    private JPanel createWest() {
-        JPanel west = new JPanel();
-        west.setLayout(new GridLayout(25, 1));
-        west.setBorder(new TitledBorder("Game Commands"));
-        west.add(new JButton("Collide with NPC"));
-        west.add(new JButton("Collide with Pylon"));
-        west.add(new JButton("Collide with Bird"));
-        west.add(new JButton("Pick Up Fuel Can"));
-        west.add(new JButton("Enter Oil Slick"));
-        west.add(new JButton("Exit Oil Slick"));
-        west.add(new JButton("Switch Strategy"));
-        west.add(new JButton("Tick Clock"));
-        west.add(new JButton("Quit"));
-
-        return west;
-    }
-
-
     private JMenuBar createMenu() {
         JMenuBar bar = new JMenuBar();
 
         JMenu fileMenu = new JMenu("File");
 
-        jMNew = new JMenuItem("New");
-        fileMenu.add(jMNew);
+        fMNew = new JMenuItem("New");
+        fileMenu.add(fMNew);
 
-        jCMSound = new JCheckBoxMenuItem("Sound");
-        jCMSound.setMnemonic('S');
-        fileMenu.add(jCMSound);
+        fMSound = new JCheckBoxMenuItem("Sound");
+        fMSound.setMnemonic('S');
+        fileMenu.add(fMSound);
 
-        jMSave = new JMenuItem("Save");
-        fileMenu.add(jMSave);
+        fMSave = new JMenuItem("Save");
+        fileMenu.add(fMSave);
 
-        jMAbout = new JMenuItem("About");
-        jMAbout.addActionListener(this);
-        fileMenu.add(jMAbout);
+        fMAbout = new JMenuItem("About");
+        fMAbout.addActionListener(this);
+        fileMenu.add(fMAbout);
 
-        jMQuit = new JMenuItem("Quit");
-        jMQuit.addActionListener(this);
-        fileMenu.add(jMQuit);
+        fMQuit = new JMenuItem("Quit");
+        fMQuit.addActionListener(this);
+        fileMenu.add(fMQuit);
 
         JMenu commands = new JMenu("Command");
 
-        jMSlick = new JMenuItem("Add Oil Slick");
-        jMSlick.setMnemonic('O');
-        jMSlick.addActionListener(this);
-        commands.add(jMSlick);
+        fMSlick = new JMenuItem("Add Oil Slick");
+        fMSlick.setMnemonic('O');
+        fMSlick.addActionListener(this);
+        commands.add(fMSlick);
 
-        jMFuel = new JMenuItem("Pick up Fuel Can");
-        jMFuel.setMnemonic('F');
-        jMFuel.addActionListener(this);
-        commands.add(jMFuel);
+        fMFuel = new JMenuItem("Pick up Fuel Can");
+        fMFuel.setMnemonic('F');
+        fMFuel.addActionListener(this);
+        commands.add(fMFuel);
 
-        jMColor = new JMenuItem("New Colors");
-        jMColor.setMnemonic('N');
-        jMColor.addActionListener(this);
-        commands.add(jMColor);
+        fMColor = new JMenuItem("New Colors");
+        fMColor.setMnemonic('N');
+        fMColor.addActionListener(this);
+        commands.add(fMColor);
 
         bar.add(fileMenu);
         bar.add(commands);
 
         return bar;
+    }
+
+    private JPanel createWest() {
+        JPanel west = new JPanel();
+        west.setLayout(new GridLayout(25, 1));
+        west.setBorder(new TitledBorder("Game Commands"));
+
+        wPCollideNPC = new JButton("Collide with NPC");
+        wPCollidePylon = new JButton("Collide with Pylon");
+        wPCollideBird = new JButton("Collide with Bird");
+        wPFuel = new JButton("Pick Up Fuel Can");
+        wPEnterSlick = new JButton("Enter Oil Slick");
+        wPExitSlick = new JButton("Exit Oil Slick");
+        wPStrat = new JButton("Switch Strategy");
+        wPTick = new JButton("Tick Clock");
+        wPQuit = new JButton("Quit");
+
+        wPCollideNPC.addActionListener(this);
+        wPCollidePylon.addActionListener(this);
+        wPCollideBird.addActionListener(this);
+        wPFuel.addActionListener(this);
+        wPEnterSlick.addActionListener(this);
+        wPExitSlick.addActionListener(this);
+        wPStrat.addActionListener(this);
+        wPTick.addActionListener(this);
+        wPQuit.addActionListener(this);
+
+        west.add(wPCollideNPC);
+        west.add(wPCollideNPC);
+        west.add(wPCollideBird);
+        west.add(wPFuel);
+        west.add(wPEnterSlick);
+        west.add(wPExitSlick);
+        west.add(wPStrat);
+        west.add(wPTick);
+        west.add(wPQuit);
+
+        return west;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == fMAbout)
+            showAbout(e);
+        if (e.getSource() == fMQuit || e.getSource() == wPQuit)
+            if (e.getSource() == wPQuit || showQuitDialog(e))
+                System.exit(0);
+        if (e.getSource() == fMColor)
+            gw.newColors();
+        if (e.getSource() == fMFuel || e.getSource() == wPFuel)
+            gw.pickupFuel();
+        if (e.getSource() == wPCollideNPC)
+            gw.collide();
+        if (e.getSource() == wPCollidePylon)
+            gw.pylon(showGetPylon());
+        if (e.getSource() == wPCollideBird)
+            gw.hitBird();
+        if (e.getSource() == wPEnterSlick)
+            gw.enterSlick();
+        if (e.getSource() == wPExitSlick)
+            gw.exitSlick();
+        if (e.getSource() == wPStrat)
+            gw.changeStrategies();
+        if (e.getSource() == wPTick)
+            gw.tick();
     }
 
     private void showAbout(ActionEvent e) {
@@ -129,20 +177,11 @@ public class Game extends JFrame implements ActionListener {
                 JOptionPane.YES_NO_OPTION
         );
 
-        return dialog == 0 ? true : false;
+        return dialog == 0;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == jMAbout)
-            showAbout(e);
-        if (e.getSource() == jMQuit)
-            if (showQuitDialog(e))
-                System.exit(0);
-        if (e.getSource() == jMColor)
-            gw.newColors();
-        if (e.getSource() == jMFuel)
-            gw.pickupFuel();
-
+    private int showGetPylon() {
+        // TODO: write code to print get pylon
+        return 0;
     }
 }

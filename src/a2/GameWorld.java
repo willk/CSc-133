@@ -120,6 +120,11 @@ public class GameWorld implements IObservable {
             }
     }
 
+    public int getCarHitCost() {
+        int carHitCost = 10;
+        return carHitCost;
+    }
+
     private void lostLife() {
         if (this.getLives() > 0) {
             this.setLives(this.getLives() - 1);
@@ -134,6 +139,15 @@ public class GameWorld implements IObservable {
             System.out.println("Game Over!");
             System.exit(0);
         }
+    }
+
+    public int getLives() {
+        return lives;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
+        notifyObserver();
     }
 
     public void pylon(int sequence) {
@@ -182,7 +196,7 @@ public class GameWorld implements IObservable {
         go.add(new FuelCan());
     }
 
-    public void gumUp() {
+    public void hitBird() {
         /*
          * 'g'
          * pretend that a bird has flown over the player's car.
@@ -198,6 +212,11 @@ public class GameWorld implements IObservable {
                 break;
             }
         }
+    }
+
+    public int getBirdHitCost() {
+        int birdHitCost = 5;
+        return birdHitCost;
     }
 
     public void enterSlick() {
@@ -323,25 +342,6 @@ public class GameWorld implements IObservable {
         }
     }
 
-    public int getCarHitCost() {
-        int carHitCost = 10;
-        return carHitCost;
-    }
-
-    public int getBirdHitCost() {
-        int birdHitCost = 5;
-        return birdHitCost;
-    }
-
-    public int getLives() {
-        return lives;
-    }
-
-    public void setLives(int lives) {
-        this.lives = lives;
-        notifyObserver();
-    }
-
     public GameCollection getGameCollection() {
         return go;
     }
@@ -359,5 +359,8 @@ public class GameWorld implements IObservable {
 
     public int getTime() {
         return time;
+    }
+
+    public void changeStrategies() {
     }
 }

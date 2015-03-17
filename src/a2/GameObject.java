@@ -9,24 +9,8 @@ public abstract class GameObject {
     private Point location;
     private Color color;
 
-    public Point getLocation() {
-        return location;
-    }
-
-    public void setLocation(Point p) {
-        this.location = p;
-    }
-
     public void setLocation() {
         this.location = new Point(r.nextInt(1000), r.nextInt(1000));
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color c) {
-        this.color = c;
     }
 
     public void setColor() {
@@ -41,5 +25,21 @@ public abstract class GameObject {
     public String toString() {
         return "location=" + this.getLocation() +
                 ", color=" + this.getColor();
+    }
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point p) {
+        this.location = p;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color c) {
+        this.color = c;
     }
 }

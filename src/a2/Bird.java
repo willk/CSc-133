@@ -12,14 +12,6 @@ public class Bird extends Movable {
         this.setColor(r.nextInt(255), r.nextInt(255), r.nextInt(255));
     }
 
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
     public void setColor() {
     }
 
@@ -36,5 +28,13 @@ public class Bird extends Movable {
     @Override
     public String toString() {
         return "Bird: " + super.toString() + ", size=" + this.getSize();
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 }
