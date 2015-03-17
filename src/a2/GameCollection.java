@@ -4,20 +4,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Created by willk on 3/13/15.
+ * Created by William Kinderman on 3/13/15.
  */
 public class GameCollection implements ICollection {
 
-    private int position;
     private ArrayList<GameObject> go;
 
-    public void GameCollection() {
-        position = 0;
+    public GameCollection() {
         go = new ArrayList<GameObject>();
     }
 
-    public GameObject get(int i) {
-        return go.get(i);
+    @Override
+    public void remove(GameObject o) {
+        go.remove(o);
     }
 
     @Override
@@ -26,8 +25,8 @@ public class GameCollection implements ICollection {
     }
 
     @Override
-    public void add(Object o) {
-        go.add((GameObject) o);
+    public void add(GameObject o) {
+        go.add(o);
     }
 
     @Override
@@ -44,15 +43,15 @@ public class GameCollection implements ICollection {
 
         @Override
         public boolean hasNext() {
-            if (go.size() <= 0) return false;
-            if (index == go.size() - 1) return false;
+            if (size() <= 0) return false;
+            if (index == size() - 1) return false;
             return true;
         }
 
         @Override
-        public Object next() {
+        public GameObject next() {
             index++;
-            return go.get(1);
+            return go.get(index);
         }
     }
 }
