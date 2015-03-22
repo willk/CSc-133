@@ -2,7 +2,6 @@ package a2;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class GameWorld implements IGameWorld, IObservable {
@@ -13,7 +12,7 @@ public class GameWorld implements IGameWorld, IObservable {
     private boolean sound;
     private Random r;
     private ArrayList<IObserver> observers;
-    private ArrayList<Point> pylonPoints;
+    private Point[] pylonPoints;
     private GameCollection go;
 
     public void initLayout() {
@@ -26,20 +25,21 @@ public class GameWorld implements IGameWorld, IObservable {
 
         go = new GameCollection();
         observers = new ArrayList<IObserver>();
-        pylonPoints = new ArrayList<Point>(Arrays.asList(
+        pylonPoints = new Point[]{
                 new Point(125, 125),
                 new Point(875, 125),
                 new Point(875, 875),
-                new Point(125, 875))
-        );
+                new Point(125, 875),
+                new Point(500, 500)
+        };
 
         // add pylons
-        for (int i = 0; i < 4; i++) {
-            addGameObject(new Pylon(pylonPoints.get(i), i));
+        for (int i = 0; i < pylonPoints.length; i++) {
+            addGameObject(new Pylon(pylonPoints[i], i));
         }
 
         // add cars
-        addGameObject(new Player(pylonPoints.get(0)));
+        addGameObject(new Player(pylonPoints[0]));
         addGameObject(new NPCar(new Point(125, 105), new WillWinStrategy(), 0));
         addGameObject(new NPCar(new Point(125, 145), new WillWinStrategy(), 1));
         addGameObject(new NPCar(new Point(125, 165), new DemolitionDerbyStrategy(), 2));
@@ -55,13 +55,9 @@ public class GameWorld implements IGameWorld, IObservable {
         addGameObject(new Bird());
     }
 
-    private Point setNPCar(Point pylon1, Point pylon2) {
-
-        double x = r.nextInt(5) + 5;
-        double m = (pylon2.getY() - pylon1.getY()) / (pylon2.getX() - pylon1.getX());
-        double y = ((x - pylon1.getY()) / m) + pylon1.getX();
-
-        return new Point((int) x, (int) y);
+    public void setLives(int lives) {
+        this.lives = lives;
+        notifyObservers();
     }
 
     @Override
@@ -212,6 +208,7 @@ public class GameWorld implements IGameWorld, IObservable {
             if (o instanceof FuelCan) {
                 f = (FuelCan) o;
                 removeGameObject(o);
+                break;
             }
 
         if (f != null)
@@ -370,11 +367,6 @@ public class GameWorld implements IGameWorld, IObservable {
     @Override
     public int getLives() {
         return lives;
-    }
-
-    public void setLives(int lives) {
-        this.lives = lives;
-        notifyObservers();
     }
 
     @Override
