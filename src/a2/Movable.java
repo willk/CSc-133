@@ -7,13 +7,6 @@ public abstract class Movable extends GameObject {
 
     public abstract void move();
 
-    @Override
-    public String toString() {
-        return super.toString() +
-                ", speed=" + this.getSpeed() +
-                ", heading=" + this.getHeading();
-    }
-
     public double getSpeed() {
         return speed;
     }
@@ -28,5 +21,12 @@ public abstract class Movable extends GameObject {
 
     public void setHeading(double heading) {
         this.heading = (heading % 360 + 360) % 360;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", speed=" + this.getSpeed() +
+                ", heading=" + this.getHeading();
     }
 }

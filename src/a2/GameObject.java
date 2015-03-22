@@ -21,12 +21,6 @@ public abstract class GameObject {
         this.color = new Color(r, g, b);
     }
 
-    @Override
-    public String toString() {
-        return "location=" + this.getLocation() +
-                ", color=" + this.getColor();
-    }
-
     public Point getLocation() {
         return location;
     }
@@ -41,5 +35,11 @@ public abstract class GameObject {
 
     public void setColor(Color c) {
         this.color = c;
+    }
+
+    @Override
+    public String toString() {
+        return "location=" + this.getLocation() +
+                ", color=" + this.getColor();
     }
 }

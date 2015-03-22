@@ -6,7 +6,7 @@ import java.util.Iterator;
 /**
  * Created by William Kinderman on 3/13/15.
  */
-public class GameCollection implements ICollection {
+public class GameCollection implements ICollection, Iterable<GameObject> {
 
     private ArrayList<GameObject> go;
 
@@ -25,8 +25,8 @@ public class GameCollection implements ICollection {
     }
 
     @Override
-    public void remove(GameObject o) {
-        go.remove(o);
+    public boolean remove(GameObject o) {
+        return go.remove(o);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class GameCollection implements ICollection {
         return new GameCollectionIterator();
     }
 
-    private class GameCollectionIterator implements Iterator {
+    private class GameCollectionIterator implements Iterator<GameObject> {
         private int index;
 
         public GameCollectionIterator() {

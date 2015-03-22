@@ -52,21 +52,6 @@ public class Car extends Movable implements ISteerable {
         this.maxSpeed = maxSpeed;
     }
 
-    @Override
-    public void move() {
-        if (this.hasTraction()) {
-            this.setHeading(this.getHeading() + this.getSteeringDirection());
-        }
-        double theta = Math.toRadians(90 - getHeading());
-        double dx = Math.cos(theta) * this.getSpeed();
-        double dy = Math.sin(theta) * this.getSpeed();
-
-        Point p = this.getLocation();
-        p.translate((int) dx, (int) dy);
-        this.setLocation(p);
-        this.setFuelLevel(this.getFuelLevel() - 1);
-    }
-
     public int getSteeringDirection() {
         return steeringDirection;
     }
@@ -81,19 +66,6 @@ public class Car extends Movable implements ISteerable {
 
     public void setSteeringDirection(int steeringDirection) {
         this.steeringDirection = steeringDirection;
-    }
-
-    @Override
-    public String toString() {
-        return "Car: " + super.toString() +
-                ", pylon=" + this.getPylon() +
-                ", traction=" + this.hasTraction() +
-                ", steeringDirection=" + this.getSteeringDirection() +
-                ", damageLevel=" + this.getDamageLevel() +
-                ", fuelLevel=" + this.getFuelLevel() +
-                ", maxSpeed=" + this.getMaxSpeed() +
-                ", width=" + this.getWidth() +
-                ", length=" + this.getLength();
     }
 
     public int getPylon() {
@@ -127,28 +99,6 @@ public class Car extends Movable implements ISteerable {
 
     public void setLength(double length) {
         this.length = length;
-    }
-
-    @Override
-    public void setSpeed(double speed) {
-        if (this.getSpeed() >= 0)
-            if ((this.getSpeed() < this.getMaxSpeed()) && this.hasTraction())
-                super.setSpeed(this.getSpeed() + speed);
-        if (this.getSpeed() < 0)
-            super.setSpeed(0);
-
-    }
-
-    @Override
-    public void steerRight() {
-        if (this.getSteeringDirection() < 40)
-            this.setSteeringDirection(getSteeringDirection() + 5);
-    }
-
-    @Override
-    public void steerLeft() {
-        if (this.getSteeringDirection() > -40)
-            this.setSteeringDirection(getSteeringDirection() - 5);
     }
 
     public boolean hit(int damage) {
@@ -194,6 +144,56 @@ public class Car extends Movable implements ISteerable {
         this.setSpeed(0);
         this.setHeading(0);
         this.setMaxSpeed(100);
+    }
+
+    @Override
+    public void move() {
+        if (this.hasTraction()) {
+            this.setHeading(this.getHeading() + this.getSteeringDirection());
+        }
+        double theta = Math.toRadians(90 - getHeading());
+        double dx = Math.cos(theta) * this.getSpeed();
+        double dy = Math.sin(theta) * this.getSpeed();
+
+        Point p = this.getLocation();
+        p.translate((int) dx, (int) dy);
+        this.setLocation(p);
+        this.setFuelLevel(this.getFuelLevel() - 1);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                ", \npylon=" + this.getPylon() +
+                ", traction=" + this.hasTraction() +
+                ", steeringDirection=" + this.getSteeringDirection() +
+                ", damageLevel=" + this.getDamageLevel() +
+                ", fuelLevel=" + this.getFuelLevel() +
+                ", maxSpeed=" + this.getMaxSpeed() +
+                ", width=" + this.getWidth() +
+                ", length=" + this.getLength();
+    }
+
+    @Override
+    public void setSpeed(double speed) {
+        if (this.getSpeed() >= 0)
+            if ((this.getSpeed() < this.getMaxSpeed()) && this.hasTraction())
+                super.setSpeed(this.getSpeed() + speed);
+        if (this.getSpeed() < 0)
+            super.setSpeed(0);
+
+    }
+
+    @Override
+    public void steerRight() {
+        if (this.getSteeringDirection() < 40)
+            this.setSteeringDirection(getSteeringDirection() + 5);
+    }
+
+    @Override
+    public void steerLeft() {
+        if (this.getSteeringDirection() > -40)
+            this.setSteeringDirection(getSteeringDirection() - 5);
     }
 
 

@@ -2,25 +2,17 @@ package a2;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
-public class GameWorld implements IObservable {
+public class GameWorld implements IGameWorld, IObservable {
 
+    private final String version = "2.0";
     private int time;
     private int lives;
     private boolean sound;
+    private Random r;
     private ArrayList<IObserver> observers;
     private GameCollection go;
-
-    public boolean hasSound() {
-        return sound;
-    }
-
-    public void setSound(boolean sound) {
-        this.sound = sound;
-        notifyObservers();
-    }
 
     public void initLayout() {
 
@@ -28,81 +20,73 @@ public class GameWorld implements IObservable {
         lives = 3;
         sound = false;
 
-        Random r = new Random(System.nanoTime());
+        r = new Random(System.nanoTime());
 
         go = new GameCollection();
         observers = new ArrayList<IObserver>();
 
         for (int i = 1; i < (r.nextInt(4) + 4); i++) {
             Point point = new Point(r.nextInt(1000), r.nextInt(1000));
-            go.add(new Pylon(point, i));
+            addGameObject(new Pylon(point, i));
             if (i == 1) {
-                go.add(new Player(new Point(point)));
-                // TODO: Code to add NPCars
+                addGameObject(new Player(new Point(point)));
+                addGameObject(new NPCar(new Point(point), new DemolitionDerbyStrategy(), 0));
+                addGameObject(new NPCar(new Point(point), new WillWinStrategy(), 1));
+                addGameObject(new NPCar(new Point(point), new WillWinStrategy(), 2));
+                addGameObject(new NPCar(new Point(point), new WillWinStrategy(), 3));
             }
         }
 
         for (int i = 0; i < (r.nextInt(2) + 2); i++)
-            go.add(new FuelCan());
+            addGameObject(new FuelCan());
 
-        go.add(new OilSlick());
-        go.add(new OilSlick());
+        addGameObject(new OilSlick());
+        addGameObject(new OilSlick());
 
-        go.add(new Bird());
-        go.add(new Bird());
+        addGameObject(new Bird());
+        addGameObject(new Bird());
     }
 
+    private Point setNPCar(Point pylon1, Point pylon2) {
+
+        double x = r.nextInt(5) + 5;
+        double m = (pylon2.getY() - pylon1.getY()) / (pylon2.getX() - pylon1.getX());
+        double y = ((x - pylon1.getY()) / m) + pylon1.getX();
+
+        return new Point((int) x, (int) y);
+    }
+
+    @Override
+    public GameCollection getGameCollection() {
+        return go;
+    }
+
+    @Override
+    public void addGameObject(GameObject o) {
+        go.add(o);
+    }
+
+    @Override
+    public boolean removeGameObject(GameObject o) {
+        return go.remove(o);
+    }
+
+    @Override
     public void accelerate() {
         /*
          * 'a'
          * Tell the game world to accelerate the player's car small amount.
          * Effects of acceleration are limited on damage, fuel, max speed.
          */
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if (iterator.next() instanceof Player)
-                ((Player) iterator).setSpeed(5);
+
+        for (GameObject o : go)
+            if (o instanceof Player)
+                ((Player) o).setSpeed(5);
+
+        notifyObservers();
     }
 
-    public void brake() {
-        /*
-         * 'b'
-         * Reduce speed of player's car small amount.
-         * If the car is in an oil slick, does nothing.
-         */
-
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if (iterator instanceof Player)
-                ((Player) iterator).setSpeed(-5);
-    }
-
-    public void left() {
-        /*
-         * 'l'
-         * Change the steering direction of the car 5 degrees left.
-         * Changes the direction of the car's steering wheel (not heading), does not immediately affect car's heading.
-         */
-        GameObject o;
-        Iterator i = go.iterator();
-        while (i.hasNext())
-            if ((o = (GameObject) i.next()) instanceof Player)
-                ((Player) o).steerLeft();
-    }
-
-    public void right() {
-        /*
-         * 'r'
-         * Change the steering direction of the car 5 degrees right.
-         * Changes the direction of the car's steering wheel (not heading), does not immediately affect car's heading.
-         */
-        GameObject o;
-        Iterator i = go.iterator();
-        while (i.hasNext())
-            if ((o = (GameObject) i.next()) instanceof Player)
-                ((Player) o).steerRight();
-    }
-
+    @Override
     public void addOilSlick() {
         /*
          * 'o'
@@ -111,170 +95,72 @@ public class GameWorld implements IObservable {
          */
 
         go.add(new OilSlick());
-    }
 
-    public void collide() {
-        /*
-         * 'c'
-         * Pretend that the player's car collided with some other car.
-         * Tell the game world that this collision has occurred.
-         * Colliding increases the player's damage level, if damage is 100% the car cannot move and player's lives
-         *  decreases.
-         */
-
-        GameObject o;
-        Iterator i = go.iterator();
-        while (i.hasNext())
-            if ((o = (GameObject) i.next()) instanceof Player) {
-                if (((Player) o).hit(this.getCarHitCost()))
-                    this.lostLife();
-                break;
-            }
-    }
-
-    public int getCarHitCost() {
-        int carHitCost = 10;
-        return carHitCost;
-    }
-
-    private void lostLife() {
-        if (this.getLives() > 0) {
-            this.setLives(this.getLives() - 1);
-
-            GameObject o;
-            Iterator i = go.iterator();
-
-            while (i.hasNext())
-                if ((o = (GameObject) i.next()) instanceof Player) {
-                    ((Player) o).reset();
-                    break;
-                }
-        } else if (this.getLives() <= 0) {
-            System.out.println("Game Over!");
-            System.exit(0);
-        }
-    }
-
-    public int getLives() {
-        return lives;
-    }
-
-    public void setLives(int lives) {
-        this.lives = lives;
         notifyObservers();
     }
 
-    public void pylon(int sequence) {
+    @Override
+    public void brake() {
         /*
-         * 'pXX'
-         * Pretend the player's car has driven over pylon XX.
-         * Tell the game world that this collision has occurred.
-         * The effect of driving over a pylon is to check to see whether the number XX is exactly one greater than the
-         *  most recent pylon which the car collided with. If it is, then record in the car that the fact that the car
-         *  has now reached the next sequential pylon.
+         * 'b'
+         * Reduce speed of player's car small amount.
+         * If the car is in an oil slick, does nothing.
          */
-        GameObject o;
-        Iterator i = go.iterator();
 
-        while (i.hasNext())
-            if ((o = (GameObject) (i.next())) instanceof Player)
-                ((Player) o).setPylon(sequence);
-        notifyObservers();
-    }
-
-    public void pickupFuel() {
-        /*
-         * 'f'
-         * pretend player's car has collided with a fuel can.
-         * Tell the game world that this collision has occurred.
-         * The effect of picking up a fuel can is to increase the Player's fuel level by the size of the fuel can, remove
-         *  the fuel can from the game and add a new fuel can with randomly-specified values back into the game.
-         */
-        FuelCan f = null;
-        GameObject o = null;
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext())
-            if ((o = (GameObject) iterator.next()) instanceof FuelCan) {
-                f = (FuelCan) o;
-                go.remove(o);
-                break;
-            }
-
-        if (f != null) {
-            iterator = go.iterator();
-            while (iterator.hasNext())
-                o = (GameObject) (iterator.next());
+        for (GameObject o : go)
             if (o instanceof Player)
-                ((Player) o).addFuel(((Player) o).getFuelLevel() + f.getSize());
+                ((Player) o).setSpeed(-5);
+
+        notifyObservers();
+    }
+
+    @Override
+    public void changeStrategy() {
+    }
+
+    @Override
+    public void left() {
+        /*
+         * 'l'
+         * Change the steering direction of the car 5 degrees left.
+         * Changes the direction of the car's steering wheel (not heading), does not immediately affect car's heading.
+         */
+
+        for (GameObject o : go) {
+            if (o instanceof Player)
+                ((Player) o).steerLeft();
         }
 
-        go.add(new FuelCan());
         notifyObservers();
     }
 
-    public void hitBird() {
+    @Override
+    public void quit() {
         /*
-         * 'g'
-         * pretend that a bird has flown over the player's car.
-         * Increase the damage to the car as described by description of Bird.
+         * 'q'
+         * Call the method System.exit(0) to quit
+         * Confirm exit prior to quiting.
          */
-        Iterator iterator = go.iterator();
-        GameObject o;
-        while (iterator.hasNext()) {
-            if ((o = (GameObject) iterator.next()) instanceof Player) {
-                if (((Player) o).hit(this.getBirdHitCost()))
-                    this.lostLife();
-                break;
-            }
-        }
 
-        notifyObservers();
+        System.exit(0);
     }
 
-    public int getBirdHitCost() {
-        int birdHitCost = 5;
-        return birdHitCost;
-    }
-
-    public void enterSlick() {
+    @Override
+    public void right() {
         /*
-         * 'e'
-         * Tell game world player's car is in an oil slick.
-         * The game world should set a flag in the player's car indicating it is in an oil slick.
+         * 'r'
+         * Change the steering direction of the car 5 degrees right.
+         * Changes the direction of the car's steering wheel (not heading), does not immediately affect car's heading.
          */
-        GameObject o;
-        Iterator i = go.iterator();
-        while (i.hasNext())
-            if ((o = (GameObject) i.next()) instanceof Player)
-                ((Player) o).setTraction(false);
+
+        for (GameObject o : go)
+            if (o instanceof Player)
+                ((Player) o).steerRight();
+
         notifyObservers();
     }
 
-    public void exitSlick() {
-        /*
-         * 'x'
-         * Tell game world player's car is no longer in an oil slick.
-         * The game world should clear the flag it created when car entered the slick.
-         */
-        GameObject o;
-        Iterator i = go.iterator();
-        while (i.hasNext())
-            if ((o = (GameObject) i.next()) instanceof Player)
-                ((Player) i).setTraction(true);
-        notifyObservers();
-    }
-
-    public void newColors() {
-        /*
-         * 'n'
-         * Tells the game world to generate random new colors for all objects that can change colors.
-         */
-        Iterator i = go.iterator();
-        while (i.hasNext())
-            ((GameObject) i.next()).setColor();
-        notifyObservers();
-    }
-
+    @Override
     public void tick() {
         /*
          * 't'
@@ -287,34 +173,200 @@ public class GameWorld implements IObservable {
          *  4. The game clock is incremented by 1.
          */
         time++;
-        GameObject o;
-        Iterator iterator = go.iterator();
-        while (iterator.hasNext()) {
-            o = (GameObject) iterator.next();
-            if (o instanceof Movable)
-                ((Movable) o).move();
-            if (o instanceof Player)
-                if (((Player) o).getFuelLevel() < 1)
-                    this.lostLife();
-                else if (((Player) o).getMaxSpeed() == 0)
-                    this.lostLife();
-        }
+
+        for (GameObject o : go)
+            if (o instanceof Movable) {
+                if (o instanceof Movable)
+                    ((Movable) o).move();
+                if (o instanceof Player)
+                    if (((Player) o).getFuelLevel() < 1)
+                        lostLife();
+                    else if (((Player) o).getMaxSpeed() == 0)
+                        lostLife();
+            }
+
         notifyObservers();
 
     }
 
-    public void quit() {
+    @Override
+    public void pickUpFuel() {
         /*
-         * 'q'
-         * Call the method System.exit(0) to quit
-         * Confirm exit prior to quiting.
+         * 'f'
+         * pretend player's car has collided with a fuel can.
+         * Tell the game world that this collision has occurred.
+         * The effect of picking up a fuel can is to increase the Player's fuel level by the size of the fuel can, remove
+         *  the fuel can from the game and add a new fuel can with randomly-specified values back into the game.
          */
+        FuelCan f = null;
 
-        System.exit(0);
+        for (GameObject o : go)
+            if (o instanceof FuelCan) {
+                f = (FuelCan) o;
+                removeGameObject(o);
+            }
+
+        if (f != null)
+            for (GameObject o : go)
+                if (o instanceof Player)
+                    ((Player) o).addFuel(((Player) o).getFuelLevel() + f.getSize());
+
+        go.add(new FuelCan());
+
+        notifyObservers();
     }
 
-    public GameCollection getGameCollection() {
-        return go;
+    @Override
+    public void newColors() {
+        /*
+         * 'n'
+         * Tells the game world to generate random new colors for all objects that can change colors.
+         */
+
+        for (GameObject o : go)
+            o.setColor();
+
+        notifyObservers();
+    }
+
+    @Override
+    public String getVersion() {
+        return this.version;
+    }
+
+    @Override
+    public boolean getSound() {
+        return sound;
+    }
+
+    @Override
+    public void setSound(boolean sound) {
+        this.sound = sound;
+        notifyObservers();
+    }
+
+    @Override
+    public void enterSlick() {
+        /*
+         * 'e'
+         * Tell game world player's car is in an oil slick.
+         * The game world should set a flag in the player's car indicating it is in an oil slick.
+         */
+
+        for (GameObject o : go)
+            if (o instanceof Player)
+                ((Player) o).setTraction(false);
+
+        notifyObservers();
+    }
+
+    @Override
+    public void exitSlick() {
+        /*
+         * 'x'
+         * Tell game world player's car is no longer in an oil slick.
+         * The game world should clear the flag it created when car entered the slick.
+         */
+
+        for (GameObject o : go)
+            if (o instanceof Player)
+                ((Player) o).setTraction(true);
+
+        notifyObservers();
+    }
+
+    @Override
+    public void collideBird() {
+        /*
+         * 'g'
+         * pretend that a bird has flown over the player's car.
+         * Increase the damage to the car as described by description of Bird.
+         */
+
+        for (GameObject o : go)
+            if (o instanceof Player)
+                if (((Player) o).hit(5))
+                    lostLife();
+
+        notifyObservers();
+    }
+
+    @Override
+    public void collidePylon(int pylon) {
+        /*
+         * 'pXX'
+         * Pretend the player's car has driven over collidePylon XX.
+         * Tell the game world that this collision has occurred.
+         * The effect of driving over a collidePylon is to check to see whether the number XX is exactly one greater than the
+         *  most recent collidePylon which the car collided with. If it is, then record in the car that the fact that the car
+         *  has now reached the next sequential collidePylon.
+         */
+
+        for (GameObject o : go)
+            if (o instanceof Player)
+                ((Player) o).setPylon(pylon);
+
+        notifyObservers();
+    }
+
+    @Override
+    public void collideCar(int nPCar) {
+        /*
+         * 'c'
+         * Pretend that the player's car collided with some other car.
+         * Tell the game world that this collision has occurred.
+         * Colliding increases the player's damage level, if damage is 100% the car cannot move and player's lives
+         *  decreases.
+         */
+
+        for (GameObject o : go)
+            if (o instanceof Player)
+                if (((Player) o).hit(10))
+                    this.lostLife();
+
+        notifyObservers();
+    }
+
+    private void lostLife() {
+        //  TODO: When a life is lost the game should reset, all cars back to their start location and reset the damage for each.
+        if (this.getLives() > 0) {
+            this.setLives(this.getLives() - 1);
+
+            for (GameObject o : go)
+                if (o instanceof Player)
+                    ((Player) o).reset();
+
+            notifyObservers();
+
+        } else if (this.getLives() <= 0) {
+            System.out.println("Game Over!");
+            this.quit();
+        }
+    }
+
+    @Override
+    public int getHighestPylon() {
+
+        for (GameObject o : go)
+            if (o instanceof Player)
+                return ((Player) o).getPylon();
+
+        return -1;
+    }
+
+    @Override
+    public int getTime() {
+        return time;
+    }
+
+    @Override
+    public int getLives() {
+        return lives;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
+        notifyObservers();
     }
 
     @Override
@@ -324,25 +376,7 @@ public class GameWorld implements IObservable {
 
     @Override
     public void notifyObservers() {
-        for (IObserver o : observers)
-            o.update(this);
-    }
-
-    public int getTime() {
-        return time;
-    }
-
-    public void changeStrategies() {
-    }
-
-    public int getHighestPylon() {
-        int pylon = -1;
-        GameObject o;
-        Iterator i = go.iterator();
-        while (i.hasNext()) {
-            if ((o = (GameObject) i.next()) instanceof Player)
-                pylon = ((Player) o).getPylon();
-        }
-        return pylon;
+        for (IObserver observer : observers)
+            observer.update(new GameWorldProxy(this));
     }
 }
