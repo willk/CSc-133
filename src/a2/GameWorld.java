@@ -2,6 +2,7 @@ package a2;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class GameWorld implements IGameWorld, IObservable {
@@ -12,6 +13,7 @@ public class GameWorld implements IGameWorld, IObservable {
     private boolean sound;
     private Random r;
     private ArrayList<IObserver> observers;
+    private ArrayList<Point> pylonPoints;
     private GameCollection go;
 
     public void initLayout() {
@@ -24,18 +26,24 @@ public class GameWorld implements IGameWorld, IObservable {
 
         go = new GameCollection();
         observers = new ArrayList<IObserver>();
+        pylonPoints = new ArrayList<Point>(Arrays.asList(
+                new Point(125, 125),
+                new Point(875, 125),
+                new Point(875, 875),
+                new Point(125, 875))
+        );
 
-        for (int i = 1; i < (r.nextInt(4) + 4); i++) {
-            Point point = new Point(r.nextInt(1000), r.nextInt(1000));
-            addGameObject(new Pylon(point, i));
-            if (i == 1) {
-                addGameObject(new Player(new Point(point)));
-                addGameObject(new NPCar(new Point(point), new DemolitionDerbyStrategy(), 0));
-                addGameObject(new NPCar(new Point(point), new WillWinStrategy(), 1));
-                addGameObject(new NPCar(new Point(point), new WillWinStrategy(), 2));
-                addGameObject(new NPCar(new Point(point), new WillWinStrategy(), 3));
-            }
+        // add pylons
+        for (int i = 0; i < 4; i++) {
+            addGameObject(new Pylon(pylonPoints.get(i), i));
         }
+
+        // add cars
+        addGameObject(new Player(pylonPoints.get(0)));
+        addGameObject(new NPCar(new Point(125, 105), new WillWinStrategy(), 0));
+        addGameObject(new NPCar(new Point(125, 145), new WillWinStrategy(), 1));
+        addGameObject(new NPCar(new Point(125, 165), new DemolitionDerbyStrategy(), 2));
+
 
         for (int i = 0; i < (r.nextInt(2) + 2); i++)
             addGameObject(new FuelCan());
