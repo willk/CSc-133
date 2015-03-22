@@ -1,7 +1,6 @@
 package a2;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -28,7 +27,7 @@ public class CmdAbout extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         JOptionPane.showMessageDialog(
-                (Component) e.getSource(),
+                null,
                 "Race Car Game Extreme\n" +
                         "Version: " + gwp.getVersion() + "\n" +
                         "Created by: William Kinderman\n" +
