@@ -112,9 +112,16 @@ public class GameWorld implements IGameWorld, IObservable {
 
     public void changeStrategy() {
         for (GameObject o : go) {
-            if (o instanceof NPCar)
-                ((NPCar) o).setPylon(((NPCar) o).getPylon() + 1);
+            if (o instanceof NPCar) {
+                ((NPCar) o).setPylon((((NPCar) o).getPylon() + 1) % 5);
+                if (((NPCar) o).getStrategy() instanceof WillWinStrategy)
+                    ((NPCar) o).setStrategy(new DemolitionDerbyStrategy((NPCar) o, player));
+                else
+                    ((NPCar) o).setStrategy(new WillWinStrategy((NPCar) o, new GameWorldProxy(this)));
+            }
         }
+
+        notifyObservers();
     }
 
     public void left() {
