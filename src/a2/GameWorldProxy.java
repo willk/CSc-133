@@ -1,142 +1,71 @@
 package a2;
 
+import a2.game.objects.GameCollection;
+import a2.game.objects.GameObject;
+import a2.game.objects.Player;
+
 /**
  * Created by William Kinderman on 3/20/15, 6:37 PM.
  */
 public class GameWorldProxy implements IGameWorld, IObservable {
-    GameWorld gw;
+    GameWorld gameWorld;
 
     public GameWorldProxy(GameWorld gameWorld) {
-        gw = gameWorld;
+        this.gameWorld = gameWorld;
+    }
+
+    @Override
+    public Player getPlayer() {
+        return gameWorld.getPlayer();
     }
 
     @Override
     public GameCollection getGameCollection() {
-        return gw.getGameCollection();
+        return gameWorld.getGameCollection();
     }
 
     @Override
     public void addGameObject(GameObject o) {
-        gw.addGameObject(o);
+        gameWorld.addGameObject(o);
     }
 
     @Override
     public boolean removeGameObject(GameObject o) {
-        return gw.removeGameObject(o);
-    }
-
-    @Override
-    public void accelerate() {
-        gw.accelerate();
-    }
-
-    @Override
-    public void addOilSlick() {
-        gw.addOilSlick();
-    }
-
-    @Override
-    public void brake() {
-        gw.brake();
-    }
-
-    @Override
-    public void changeStrategy() {
-        gw.changeStrategy();
-    }
-
-    @Override
-    public void left() {
-        gw.left();
-    }
-
-    @Override
-    public void quit() {
-        gw.quit();
-    }
-
-    @Override
-    public void right() {
-        gw.right();
-    }
-
-    @Override
-    public void tick() {
-        gw.tick();
-    }
-
-    @Override
-    public void pickUpFuel() {
-        gw.pickUpFuel();
-    }
-
-    @Override
-    public void newColors() {
-        gw.newColors();
+        return gameWorld.removeGameObject(o);
     }
 
     @Override
     public String getVersion() {
-        return gw.getVersion();
+        return gameWorld.getVersion();
     }
 
     @Override
     public boolean getSound() {
-        return gw.getSound();
-    }
-
-    @Override
-    public void setSound(boolean sound) {
-        gw.setSound(sound);
-    }
-
-    @Override
-    public void enterSlick() {
-        gw.enterSlick();
-    }
-
-    @Override
-    public void exitSlick() {
-        gw.exitSlick();
-    }
-
-    @Override
-    public void collideBird() {
-        gw.collideBird();
-    }
-
-    @Override
-    public void collidePylon(int pylon) {
-        gw.collidePylon(pylon);
-    }
-
-    @Override
-    public void collideCar(int nPCar) {
-        gw.collideCar(nPCar);
+        return gameWorld.getSound();
     }
 
     @Override
     public int getHighestPylon() {
-        return gw.getHighestPylon();
+        return gameWorld.getHighestPylon();
     }
 
     @Override
     public int getTime() {
-        return gw.getTime();
+        return gameWorld.getTime();
     }
 
     @Override
     public int getLives() {
-        return gw.getLives();
+        return gameWorld.getLives();
     }
 
     @Override
     public void addObserver(IObserver o) {
-        gw.addObserver(o);
+        gameWorld.addObserver(o);
     }
 
     @Override
     public void notifyObservers() {
-        gw.notifyObservers();
+        gameWorld.notifyObservers();
     }
 }

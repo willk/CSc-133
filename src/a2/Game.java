@@ -1,11 +1,16 @@
 package a2;
 
+import a2.game.commands.*;
+import a2.game.views.ButtonView;
+import a2.game.views.MapView;
+import a2.game.views.MenuBarView;
+import a2.game.views.ScoreView;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Game extends JFrame {
     private GameWorld gw;
-    private GameWorldProxy gwp;
     private MenuBarView mbv;
     private ButtonView bv;
     private ScoreView sv;
@@ -13,9 +18,8 @@ public class Game extends JFrame {
 
     public Game() {
         gw = new GameWorld();
-        gwp = new GameWorldProxy(gw);
-        mbv = new MenuBarView(gwp);
-        bv = new ButtonView(gwp);
+        mbv = new MenuBarView();
+        bv = new ButtonView();
         sv = new ScoreView();
         mv = new MapView();
         gw.initLayout();
@@ -25,7 +29,7 @@ public class Game extends JFrame {
         gw.addObserver(mv);
 
         setTitle("Race Car Game Extreme");
-        setSize(1000, 800);
+        setSize(1280, 800);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -37,47 +41,47 @@ public class Game extends JFrame {
 
         // Create singleton instances of commands.
 
-        CmdAbout about = CmdAbout.getInstance();
-        CmdAccelerate accelerate = CmdAccelerate.getInstance();
-        CmdBrake brake = CmdBrake.getInstance();
-        CmdChangeStrategy changeStrategy = CmdChangeStrategy.getInstance();
-        CmdCollideBird bird = CmdCollideBird.getInstance();
-        CmdCollideCar car = CmdCollideCar.getInstance();
-        CmdCollidePylon pylon = CmdCollidePylon.getInstance();
-        CmdEnterSlick enterSlick = CmdEnterSlick.getInstance();
-        CmdExitSlick exitSlick = CmdExitSlick.getInstance();
-        CmdFuelCan fuelCan = CmdFuelCan.getInstance();
-        CmdLeft left = CmdLeft.getInstance();
-        CmdNew newGame = CmdNew.getInstance();
-        CmdNewColors newColors = CmdNewColors.getInstance();
-        CmdOilSlick oilSlick = CmdOilSlick.getInstance();
-        CmdQuit quit = CmdQuit.getInstance();
-        CmdRight right = CmdRight.getInstance();
-        CmdSave saveGame = CmdSave.getInstance();
-        CmdSound sound = CmdSound.getInstance();
-        CmdTick tick = CmdTick.getInstance();
+        About about = About.getInstance();
+        Accelerate accelerate = Accelerate.getInstance();
+        AddOilSlick addOilSlick = AddOilSlick.getInstance();
+        Brake brake = Brake.getInstance();
+        ChangeStrategy changeStrategy = ChangeStrategy.getInstance();
+        CollideBird bird = CollideBird.getInstance();
+        CollideCar car = CollideCar.getInstance();
+        CollidePylon pylon = CollidePylon.getInstance();
+        EnterOilSlick enterOilSlick = EnterOilSlick.getInstance();
+        ExitOilSlick exitOilSlick = ExitOilSlick.getInstance();
+        NewGame newGame = NewGame.getInstance();
+        NewColors newColors = NewColors.getInstance();
+        PickUpFuelCan pickUpFuelCan = PickUpFuelCan.getInstance();
+        Quit quit = Quit.getInstance();
+        SaveGame saveGame = SaveGame.getInstance();
+        Sound sound = Sound.getInstance();
+        Tick tick = Tick.getInstance();
+        TurnLeft turnLeft = TurnLeft.getInstance();
+        TurnRight turnRight = TurnRight.getInstance();
 
         // Pass GameWorld into the commands.
 
-        about.setTarget(gwp);
-        accelerate.setTarget(gwp);
-        brake.setTarget(gwp);
-        changeStrategy.setTarget(gwp);
-        bird.setTarget(gwp);
-        car.setTarget(gwp);
-        pylon.setTarget(gwp);
-        enterSlick.setTarget(gwp);
-        exitSlick.setTarget(gwp);
-        fuelCan.setTarget(gwp);
-        left.setTarget(gwp);
-        newGame.setTarget(gwp);
-        newColors.setTarget(gwp);
-        oilSlick.setTarget(gwp);
-        quit.setTarget(gwp);
-        right.setTarget(gwp);
-        saveGame.setTarget(gwp);
-        sound.setTarget(gwp);
-        tick.setTarget(gwp);
+        about.setTarget(gw);
+        accelerate.setTarget(gw);
+        addOilSlick.setTarget(gw);
+        brake.setTarget(gw);
+        changeStrategy.setTarget(gw);
+        bird.setTarget(gw);
+        car.setTarget(gw);
+        pylon.setTarget(gw);
+        enterOilSlick.setTarget(gw);
+        exitOilSlick.setTarget(gw);
+        newGame.setTarget(gw);
+        newColors.setTarget(gw);
+        pickUpFuelCan.setTarget(gw);
+        quit.setTarget(gw);
+        saveGame.setTarget(gw);
+        sound.setTarget(gw);
+        tick.setTarget(gw);
+        turnLeft.setTarget(gw);
+        turnRight.setTarget(gw);
 
         this.setVisible(true);
         this.requestFocus();

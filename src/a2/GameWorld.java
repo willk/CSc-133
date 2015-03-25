@@ -1,6 +1,9 @@
 package a2;
 
-import java.awt.*;
+import a2.game.objects.*;
+import a2.game.strategies.DemolitionDerbyStrategy;
+import a2.game.strategies.WillWinStrategy;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -14,6 +17,10 @@ public class GameWorld implements IGameWorld, IObservable {
     private ArrayList<IObserver> observers;
     private Point[] pylonPoints;
     private GameCollection go;
+    private Player player;
+    private NPCar npCar1;
+    private NPCar npCar2;
+    private NPCar npCar3;
 
     public void initLayout() {
 
@@ -39,10 +46,13 @@ public class GameWorld implements IGameWorld, IObservable {
         }
 
         // add cars
-        addGameObject(new Player(pylonPoints[0]));
-        addGameObject(new NPCar(new Point(125, 105), new WillWinStrategy(), 0));
-        addGameObject(new NPCar(new Point(125, 145), new WillWinStrategy(), 1));
-        addGameObject(new NPCar(new Point(125, 165), new DemolitionDerbyStrategy(), 2));
+        addGameObject(player = new Player(pylonPoints[0]));
+        addGameObject(npCar1 = new NPCar(new Point(125, 105), 0));
+        addGameObject(npCar2 = new NPCar(new Point(125, 145), 1));
+        addGameObject(npCar3 = new NPCar(new Point(125, 165), 2));
+        npCar1.setStrategy(new WillWinStrategy(npCar1, new GameWorldProxy(this)));
+        npCar2.setStrategy(new WillWinStrategy(npCar2, new GameWorldProxy(this)));
+        npCar3.setStrategy(new DemolitionDerbyStrategy(npCar3, player));
 
 
         for (int i = 0; i < (r.nextInt(2) + 2); i++)
@@ -60,22 +70,6 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
-    public GameCollection getGameCollection() {
-        return go;
-    }
-
-    @Override
-    public void addGameObject(GameObject o) {
-        go.add(o);
-    }
-
-    @Override
-    public boolean removeGameObject(GameObject o) {
-        return go.remove(o);
-    }
-
-    @Override
     public void accelerate() {
         /*
          * 'a'
@@ -90,7 +84,6 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
     public void addOilSlick() {
         /*
          * 'o'
@@ -103,7 +96,6 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
     public void brake() {
         /*
          * 'b'
@@ -118,11 +110,13 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
     public void changeStrategy() {
+        for (GameObject o : go) {
+            if (o instanceof NPCar)
+                ((NPCar) o).setPylon(((NPCar) o).getPylon() + 1);
+        }
     }
 
-    @Override
     public void left() {
         /*
          * 'l'
@@ -138,7 +132,6 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
     public void quit() {
         /*
          * 'q'
@@ -149,7 +142,6 @@ public class GameWorld implements IGameWorld, IObservable {
         System.exit(0);
     }
 
-    @Override
     public void right() {
         /*
          * 'r'
@@ -164,7 +156,6 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
     public void tick() {
         /*
          * 't'
@@ -180,10 +171,9 @@ public class GameWorld implements IGameWorld, IObservable {
 
         for (GameObject o : go)
             if (o instanceof Movable) {
-                if (o instanceof Movable)
-                    ((Movable) o).move();
+                ((Movable) o).move();
                 if (o instanceof Player)
-                    if (((Player) o).getFuelLevel() < 1)
+                    if (((Player) o).getFuel() < 1)
                         lostLife();
                     else if (((Player) o).getMaxSpeed() == 0)
                         lostLife();
@@ -193,7 +183,6 @@ public class GameWorld implements IGameWorld, IObservable {
 
     }
 
-    @Override
     public void pickUpFuel() {
         /*
          * 'f'
@@ -213,15 +202,16 @@ public class GameWorld implements IGameWorld, IObservable {
 
         if (f != null)
             for (GameObject o : go)
-                if (o instanceof Player)
-                    ((Player) o).addFuel(((Player) o).getFuelLevel() + f.getSize());
+                if (o instanceof Player) {
+                    ((Player) o).addFuel(f.getSize());
+                    break;
+                }
 
         go.add(new FuelCan());
 
         notifyObservers();
     }
 
-    @Override
     public void newColors() {
         /*
          * 'n'
@@ -234,23 +224,11 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
-    public String getVersion() {
-        return this.version;
-    }
-
-    @Override
-    public boolean getSound() {
-        return sound;
-    }
-
-    @Override
     public void setSound(boolean sound) {
         this.sound = sound;
         notifyObservers();
     }
 
-    @Override
     public void enterSlick() {
         /*
          * 'e'
@@ -265,7 +243,6 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
     public void exitSlick() {
         /*
          * 'x'
@@ -280,7 +257,6 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
     public void collideBird() {
         /*
          * 'g'
@@ -296,7 +272,6 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
     public void collidePylon(int pylon) {
         /*
          * 'pXX'
@@ -314,8 +289,7 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    @Override
-    public void collideCar(int nPCar) {
+    public void collideCar() {
         /*
          * 'c'
          * Pretend that the player's car collided with some other car.
@@ -324,10 +298,20 @@ public class GameWorld implements IGameWorld, IObservable {
          *  decreases.
          */
 
+        NPCar npCar = null;
+
         for (GameObject o : go)
             if (o instanceof Player)
                 if (((Player) o).hit(10))
                     this.lostLife();
+
+        for (GameObject o : go)
+            if (o instanceof NPCar) {
+                if (npCar == null) npCar = (NPCar) o;
+                if (((NPCar) o).getDamage() <= npCar.getDamage()) npCar = (NPCar) o;
+            }
+
+        npCar.hit(10);
 
         notifyObservers();
     }
@@ -347,6 +331,36 @@ public class GameWorld implements IGameWorld, IObservable {
             System.out.println("Game Over!");
             this.quit();
         }
+    }
+
+    @Override
+    public Player getPlayer() {
+        return player;
+    }
+
+    @Override
+    public GameCollection getGameCollection() {
+        return go;
+    }
+
+    @Override
+    public void addGameObject(GameObject o) {
+        go.add(o);
+    }
+
+    @Override
+    public boolean removeGameObject(GameObject o) {
+        return go.remove(o);
+    }
+
+    @Override
+    public String getVersion() {
+        return this.version;
+    }
+
+    @Override
+    public boolean getSound() {
+        return sound;
     }
 
     @Override

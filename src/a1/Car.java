@@ -84,8 +84,8 @@ public class Car extends Movable implements ISteerable {
         this.damageLevel = damage;
     }
 //
-//    public void setDamageLevel(double damage) {
-//        if (this.getDamageLevel() < this.getMaxDamageLevel()) {
+//    public void setDamage(double damage) {
+//        if (this.getDamage() < this.getMaxDamage()) {
 //            this.damageLevel += damage;
 //        }
 //    }

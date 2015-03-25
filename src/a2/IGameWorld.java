@@ -1,5 +1,9 @@
 package a2;
 
+import a2.game.objects.GameCollection;
+import a2.game.objects.GameObject;
+import a2.game.objects.Player;
+
 /**
  * Created by William Kinderman on 3/20/15, 6:07 PM.
  */
@@ -18,37 +22,7 @@ public interface IGameWorld {
 
     String getVersion();
 
-    void accelerate();
-
     void addGameObject(GameObject o);
 
-    void addOilSlick();
-
-    void brake();
-
-    void changeStrategy();
-
-    void collideBird();
-
-    void collideCar(int nPCar);
-
-    void collidePylon(int pylon);
-
-    void enterSlick();
-
-    void exitSlick();
-
-    void left();
-
-    void newColors();
-
-    void pickUpFuel();
-
-    void quit();
-
-    void right();
-
-    void setSound(boolean sound);
-
-    void tick();
+    Player getPlayer();
 }
