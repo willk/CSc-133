@@ -1,8 +1,8 @@
-package a2;
+package a3;
 
-import a2.game.objects.*;
-import a2.game.strategies.DemolitionDerbyStrategy;
-import a2.game.strategies.WillWinStrategy;
+import a3.game.objects.*;
+import a3.game.strategies.DemolitionDerbyStrategy;
+import a3.game.strategies.WillWinStrategy;
 
 import java.util.ArrayList;
 import java.util.Random;

@@ -1,10 +1,10 @@
-package a2;
+package a3;
 
-import a2.game.commands.*;
-import a2.game.views.ButtonView;
-import a2.game.views.MapView;
-import a2.game.views.MenuBarView;
-import a2.game.views.ScoreView;
+import a3.game.commands.*;
+import a3.game.views.ButtonView;
+import a3.game.views.MapView;
+import a3.game.views.MenuBarView;
+import a3.game.views.ScoreView;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,10 +1,10 @@
-package a2.game.views;
+package a3.game.views;
 
-import a2.GameWorldProxy;
-import a2.IObservable;
-import a2.IObserver;
-import a2.game.commands.*;
-import a2.game.objects.GameObject;
+import a3.GameWorldProxy;
+import a3.IObservable;
+import a3.IObserver;
+import a3.game.commands.*;
+import a3.game.objects.GameObject;
 
 import javax.swing.*;
 import java.awt.*;
