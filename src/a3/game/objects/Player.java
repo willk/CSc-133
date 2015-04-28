@@ -2,14 +2,20 @@ package a3.game.objects;
 
 import a3.Point;
 
+import java.awt.*;
+
 /**
  * Created by William Kinderman on 3/15/15.
  */
-public class Player extends Car {
+public class Player extends Car implements IDrawable {
+    /* Player:
+     * There can only be one.
+     */
     private boolean traction;
 
     public Player(Point p) {
         super(p);
+        this.setColor();
         this.traction = true;
     }
 
@@ -41,15 +47,21 @@ public class Player extends Car {
     }
 
     @Override
-    public void move() {
+    public void move(double time) {
 
         if (this.hasTraction()) {
             this.setHeading(this.getHeading() + this.getDirection());
         }
 
-        super.move();
+        super.move(time);
 
-        this.setFuel(this.getFuel() - 0.2);
+        this.setFuel(this.getFuel() - 0.05);
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.setColor(this.getColor());
+        g.fillRect(round(getX() - (getWidth() / 2)), round(getY() - (getLength() / 2)), round(getWidth()), round(getLength()));
     }
 }
 

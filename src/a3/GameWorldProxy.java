@@ -50,7 +50,7 @@ public class GameWorldProxy implements IGameWorld, IObservable {
     }
 
     @Override
-    public int getTime() {
+    public double getTime() {
         return gameWorld.getTime();
     }
 

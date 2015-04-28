@@ -39,14 +39,14 @@ public class ScoreView extends JPanel implements IObserver {
     public void update(IObservable o) {
         GameWorldProxy gwp = (GameWorldProxy) o;
 
-        time.setText("Time: " + gwp.getTime());
+        time.setText("Time: " + (int) (gwp.getTime() / 50));
         lives.setText("Lives: " + gwp.getLives());
 
         for (GameObject go : gwp.getGameCollection())
             if (go instanceof Player) {
                 pylon.setText("Current Pylon: " + ((Player) go).getPylon());
                 fuel.setText("Fuel Level: " + String.format("%.2f", ((Player) go).getFuel()) + "%");
-                damage.setText("Damage: " + String.format("%.df", ((Player) go).getDamage()) + "%");
+                damage.setText("Damage: " + String.format("%.2f", ((Player) go).getDamage()) + "%");
             }
 
         sound.setText("Sound: " + (gwp.getSound() ? "On" : "Off"));

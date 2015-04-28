@@ -5,8 +5,6 @@ import a3.Point;
 public class Car extends Movable implements ISteerable {
     private int pylon;
 
-    private Point initialPoint;
-
     private double width;
     private double length;
     private double maxSpeed;
@@ -25,11 +23,11 @@ public class Car extends Movable implements ISteerable {
         this.setMaxFuel(100);
         this.setMaxDamage(100);
 
-        this.pylon = 1;
+        this.pylon = 0;
         this.setColor();
 
-        this.setWidth(10);
-        this.setLength(15);
+        this.setWidth(15);
+        this.setLength(10);
 
         this.setLocation(location);
     }
@@ -137,18 +135,6 @@ public class Car extends Movable implements ISteerable {
     }
 
     @Override
-    public void move() {
-
-        double theta = Math.toRadians(90 - getHeading());
-        double dx = Math.cos(theta) * this.getSpeed();
-        double dy = Math.sin(theta) * this.getSpeed();
-
-        Point p = this.getLocation();
-        p.translate((int) dx, (int) dy);
-        this.setLocation(p);
-    }
-
-    @Override
     public String toString() {
         return super.toString() +
                 ", \npylon=" + this.getPylon() +
@@ -181,6 +167,4 @@ public class Car extends Movable implements ISteerable {
         if (this.getDirection() > -40)
             this.setDirection(getDirection() - 5);
     }
-
-
 }

@@ -4,23 +4,31 @@ import a3.game.objects.*;
 import a3.game.strategies.DemolitionDerbyStrategy;
 import a3.game.strategies.WillWinStrategy;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class GameWorld implements IGameWorld, IObservable {
 
     private final String version = "2.0";
-    private int time;
+    private Factory f;
+    private double time;
     private int lives;
     private boolean sound;
     private Random r;
     private ArrayList<IObserver> observers;
-    private Point[] pylonPoints;
     private GameCollection go;
     private Player player;
     private NPCar npCar1;
     private NPCar npCar2;
     private NPCar npCar3;
+    private Dimension worldSize;
+    private ArrayList<Point> pyp;
+
+    public GameWorld(Dimension worldSize) {
+        this.worldSize = worldSize;
+    }
+
 
     public void initLayout() {
 
@@ -30,29 +38,35 @@ public class GameWorld implements IGameWorld, IObservable {
 
         r = new Random(System.nanoTime());
 
+
         go = new GameCollection();
         observers = new ArrayList<IObserver>();
-        pylonPoints = new Point[]{
-                new Point(125, 125),
-                new Point(875, 125),
-                new Point(875, 875),
-                new Point(125, 875),
-                new Point(500, 500)
-        };
+
+        pyp = new ArrayList<Point>();
+        pyp.add(new Point(150, 90));
+        pyp.add(new Point(850, 90));
+        pyp.add(new Point(850, 630));
+        pyp.add(new Point(500, 360));
+        pyp.add(new Point(150, 630));
+//        start = new Point(r.nextInt(), r.nextInt());
 
         // add pylons
-        for (int i = 0; i < pylonPoints.length; i++) {
-            addGameObject(new Pylon(pylonPoints[i], i));
+        for (int i = 0; i < pyp.size(); i++) {
+            addGameObject(new Pylon(pyp.get(i), i));
         }
 
         // add cars
-        addGameObject(player = new Player(pylonPoints[0]));
-        addGameObject(npCar1 = new NPCar(new Point(125, 105), 0));
-        addGameObject(npCar2 = new NPCar(new Point(125, 145), 1));
-        addGameObject(npCar3 = new NPCar(new Point(125, 165), 2));
-        npCar1.setStrategy(new WillWinStrategy(npCar1, new GameWorldProxy(this)));
-        npCar2.setStrategy(new WillWinStrategy(npCar2, new GameWorldProxy(this)));
-        npCar3.setStrategy(new DemolitionDerbyStrategy(npCar3, player));
+//        addGameObject(player = new Player(new Point(20, 60)));
+//        addGameObject(npCar1 = new NPCar(new Point(20, 80), 0, new GameWorldProxy(this)));
+//        addGameObject(npCar2 = new NPCar(new Point(20, 100), 1, new GameWorldProxy(this)));
+//        addGameObject(npCar3 = new NPCar(new Point(20, 120), 2, new GameWorldProxy(this)));
+        addGameObject(player = new Player(new Point(450, 450)));
+        addGameObject(npCar1 = new NPCar(new Point(550, 500), 0, new GameWorldProxy(this)));
+        addGameObject(npCar2 = new NPCar(new Point(530, 500), 1, new GameWorldProxy(this)));
+        addGameObject(npCar3 = new NPCar(new Point(500, 500), 2, new GameWorldProxy(this)));
+//        npCar1.setStrategy(new WillWinStrategy(npCar1, new GameWorldProxy(this)));
+//        npCar2.setStrategy(new WillWinStrategy(npCar2, new GameWorldProxy(this)));
+//        npCar3.setStrategy(new DemolitionDerbyStrategy(npCar3, new GameWorldProxy(this)));
 
 
         for (int i = 0; i < (r.nextInt(2) + 2); i++)
@@ -60,9 +74,36 @@ public class GameWorld implements IGameWorld, IObservable {
 
         addGameObject(new OilSlick());
         addGameObject(new OilSlick());
+        addGameObject(new OilSlick());
+        addGameObject(new OilSlick());
+        addGameObject(new OilSlick());
 
         addGameObject(new Bird());
         addGameObject(new Bird());
+
+//        f = new Factory(new GameWorldProxy(this), r);
+//
+//        // add pylons
+//        for (int i = 0; i < 5; i++)
+//            addGameObject(f.mkPylon());
+//
+//        // add cars
+//        addGameObject(player = f.mkPlayer());
+//
+//        for (int i = 0; i < 3; i++) {
+//            addGameObject(f.mkNPCar());
+//        }
+//
+//        for (int i = 0; i < (r.nextInt(2) + 2); i++)
+//            addGameObject(f.mkFuelCan());
+//
+//        addGameObject(f.mkOilSlick());
+//        addGameObject(f.mkOilSlick());
+//
+//        addGameObject(f.mkBird());
+//        addGameObject(f.mkBird());
+//
+//        f.start();
     }
 
     public void setLives(int lives) {
@@ -115,7 +156,7 @@ public class GameWorld implements IGameWorld, IObservable {
             if (o instanceof NPCar) {
                 ((NPCar) o).setPylon((((NPCar) o).getPylon() + 1) % 5);
                 if (((NPCar) o).getStrategy() instanceof WillWinStrategy)
-                    ((NPCar) o).setStrategy(new DemolitionDerbyStrategy((NPCar) o, player));
+                    ((NPCar) o).setStrategy(new DemolitionDerbyStrategy((NPCar) o, new GameWorldProxy(this)));
                 else
                     ((NPCar) o).setStrategy(new WillWinStrategy((NPCar) o, new GameWorldProxy(this)));
             }
@@ -176,9 +217,11 @@ public class GameWorld implements IGameWorld, IObservable {
          */
         time++;
 
+        Dimension limits = worldSize;
+
         for (GameObject o : go)
             if (o instanceof Movable) {
-                ((Movable) o).move();
+                ((Movable) o).move(getTime());
                 if (o instanceof Player)
                     if (((Player) o).getFuel() < 1)
                         lostLife();
@@ -210,7 +253,7 @@ public class GameWorld implements IGameWorld, IObservable {
         if (f != null)
             for (GameObject o : go)
                 if (o instanceof Player) {
-                    ((Player) o).addFuel(f.getSize());
+                    ((Player) o).addFuel(f.getCapacity());
                     break;
                 }
 
@@ -383,7 +426,7 @@ public class GameWorld implements IGameWorld, IObservable {
     }
 
     @Override
-    public int getTime() {
+    public double getTime() {
         return time;
     }
 

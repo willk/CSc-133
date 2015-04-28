@@ -3,16 +3,25 @@ package a3.game.objects;
 import a3.Point;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
 public abstract class GameObject {
     Random r = new Random(System.nanoTime());
 
+    protected final int _xMax = 1000;
+    protected final int _yMax = 720;
+
     private Point location;
     private Color color;
+    private Boolean remove;
 
     public void setLocation() {
-        this.location = new Point(r.nextInt(1000), r.nextInt(1000));
+        this.location = new Point(r.nextInt(_xMax), r.nextInt(_yMax));
+    }
+
+    public void setLocation(Point p) {
+        this.location = p;
     }
 
     public void setColor() {
@@ -23,12 +32,24 @@ public abstract class GameObject {
         this.color = new Color(r, g, b);
     }
 
+    public Color invertColor(Color c) {
+        return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
+    }
+
     public Point getLocation() {
         return location;
     }
 
-    public void setLocation(a3.Point point) {
-        this.location = point;
+    public double getX() {
+        return location.getX();
+    }
+
+    public double getY() {
+        return location.getY();
+    }
+
+    public int round(double d) {
+        return (int) (Math.round(d));
     }
 
     public Color getColor() {
@@ -37,6 +58,34 @@ public abstract class GameObject {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public Boolean remove() {
+        return remove;
+    }
+
+    public void setRemove(Boolean remove) {
+        this.remove = remove;
+    }
+
+    public Point centerText(String s, int x, int y, Graphics g) {
+        FontMetrics fm = g.getFontMetrics();
+        Rectangle2D r = fm.getStringBounds(s, g);
+
+        return new Point((x - r.getWidth()) / 2, ((y - r.getHeight()) / 2) + fm.getAscent());
+
+    }
+
+    public Point centerObject(double x, double y, double width, double length) {
+        return new Point(x - (width / 2), y - (length / 2));
+    }
+
+    public Point centerText(int s, int x, int y, Graphics g) {
+        FontMetrics fm = g.getFontMetrics();
+        Rectangle2D r = fm.getStringBounds(Integer.toString(s), g);
+
+        return new Point((x - r.getWidth()) / 2, ((y - r.getHeight()) / 2) + fm.getAscent());
+
     }
 
     @Override

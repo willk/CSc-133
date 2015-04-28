@@ -2,28 +2,20 @@ package a3.game.objects;
 
 import a3.Point;
 
-public class Bird extends Movable {
+import java.awt.*;
+
+public class Bird extends Movable implements IDrawable {
     int size;
 
     public Bird() {
-        this.setSpeed(r.nextInt(15) + 10);
+        this.setSpeed(r.nextInt(25) + 10);
         this.setSize(r.nextInt(10) + 5);
         this.setHeading(r.nextInt() % 360);
-        this.setLocation(new Point(r.nextDouble() * 1000, r.nextDouble() * 1000));
-        this.setColor(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+        this.setLocation(new Point(r.nextInt(_xMax), r.nextInt(_yMax)));
+        this.setColor(Color.blue);
     }
 
     public void setColor() {}
-
-    public void move() {
-        double theta = Math.toRadians(90 - getHeading());
-        double dx = Math.cos(theta) * this.getSpeed();
-        double dy = Math.sin(theta) * this.getSpeed();
-
-        Point p = this.getLocation();
-        p.translate(dx, dy);
-        this.setLocation(p);
-    }
 
     public int getSize() {
         return size;
@@ -36,5 +28,11 @@ public class Bird extends Movable {
     @Override
     public String toString() {
         return "Bird: " + super.toString() + ", size=" + this.getSize();
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.setColor(this.getColor());
+        g.drawOval(round(getX() - (getSize() / 2)), round(getY() - (getSize() / 2)), round(getSize()), round(getSize()));
     }
 }

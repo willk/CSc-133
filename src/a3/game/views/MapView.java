@@ -4,7 +4,7 @@ import a3.GameWorldProxy;
 import a3.IObservable;
 import a3.IObserver;
 import a3.game.commands.*;
-import a3.game.objects.GameObject;
+import a3.game.objects.IDrawable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +14,18 @@ import java.awt.event.KeyEvent;
  * Created by William Kinderman on 3/14/15, 6:45 PM, 6:45 PM.
  */
 public class MapView extends JPanel implements IObserver {
-    private JTextArea map;
+    GameWorldProxy gwp;
+    Dimension worldSize;
 
-    public MapView() {
+    public MapView(Dimension worldSize) {
+
+        this.worldSize = worldSize;
         this.setLayout(new BorderLayout());
+        this.setBackground(Color.white);
         this.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(66, 11, 127)));
+        this.setPreferredSize(worldSize);
+        this.setMaximumSize(worldSize);
+        this.setMinimumSize(worldSize);
 
         // Create key maps.
         InputMap inputMap = this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -41,19 +48,19 @@ public class MapView extends JPanel implements IObserver {
         actionMap.put(KeyEvent.VK_Q, Quit.getInstance());
         actionMap.put(KeyEvent.VK_RIGHT, TurnRight.getInstance());
         actionMap.put(KeyEvent.VK_T, Tick.getInstance());
+    }
 
-        map = new JTextArea();
-        map.setBackground(Color.white);
-        map.setLineWrap(true);
-        this.add(map, BorderLayout.CENTER);
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (Object o : gwp.getGameCollection())
+            if (o instanceof IDrawable)
+                ((IDrawable) o).draw(g);
     }
 
     @Override
     public void update(IObservable gwp) {
-        map.setText(null);
-        for (GameObject go : ((GameWorldProxy) gwp).getGameCollection()) {
-            System.out.println(go.toString());
-            map.append(go.toString() + "\n");
-        }
+        this.gwp = (GameWorldProxy) gwp;
+        this.repaint();
     }
 }

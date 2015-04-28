@@ -34,7 +34,7 @@ public class ButtonView extends JPanel implements IObserver {
         buttons.add(new JButton(Quit.getInstance()));
 
         for (JButton button : buttons) {
-            button.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), null);
+            button.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "none");
             this.add(button);
         }
     }

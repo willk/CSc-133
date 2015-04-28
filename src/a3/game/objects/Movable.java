@@ -1,11 +1,21 @@
 package a3.game.objects;
 
+import a3.Point;
+
 public abstract class Movable extends GameObject {
 
     private double speed;
     private double heading;
 
-    public abstract void move();
+    public void move(double time) {
+        double theta = Math.toRadians(getHeading() + 90);
+        double dx = Math.cos(theta) * (this.getSpeed());
+        double dy = Math.sin(theta) * (this.getSpeed());
+
+        Point p = this.getLocation();
+        p.translate(dx / 5, dy / 5);
+        this.setLocation(p);
+    }
 
     public double getSpeed() {
         return speed;

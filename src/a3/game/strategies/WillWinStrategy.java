@@ -14,21 +14,19 @@ import a3.game.objects.Pylon;
 public class WillWinStrategy implements IStrategy {
     private final GameWorldProxy gameWorldProxy;
     private NPCar npCar;
-    private Point pPoint;
+    private Point pylon;
 
     public WillWinStrategy(NPCar npCar, GameWorldProxy gameWorldProxy) {
         this.npCar = npCar;
         this.gameWorldProxy = gameWorldProxy;
-
+        this.getPylonLocation();
     }
 
-    private void setpPoint() {
-
-        for (GameObject go : gameWorldProxy.getGameCollection()) {
+    private void getPylonLocation() {
+        for (GameObject go : gameWorldProxy.getGameCollection())
             if (go instanceof Pylon)
                 if (((Pylon) go).getSequenceNumber() == npCar.getPylon())
-                    pPoint = go.getLocation();
-        }
+                    pylon = go.getLocation();
     }
 
     private double getPlayerSpeed() {
@@ -41,15 +39,13 @@ public class WillWinStrategy implements IStrategy {
 
     @Override
     public double apply() {
-        setpPoint();
-        npCar.setHeading(
-                Math.toDegrees(
-                        Math.atan2(
-                                npCar.getLocation().getY() - pPoint.getY(),
-                                npCar.getLocation().getX() - pPoint.getX()
-                        )
-                )
-        );
-        return getPlayerSpeed() - 5;
+        getPylonLocation();
+
+        double dy = npCar.getY() - pylon.getY();
+        double dx = npCar.getX() - pylon.getX();
+
+
+        npCar.setHeading(Math.toDegrees(Math.atan2(dy, dx)) + 90);
+        return getPlayerSpeed() / 5;
     }
 }

@@ -1,6 +1,7 @@
 package a3.game.strategies;
 
-import a3.Point;
+import a3.GameWorldProxy;
+import a3.game.objects.GameObject;
 import a3.game.objects.NPCar;
 import a3.game.objects.Player;
 
@@ -11,24 +12,20 @@ public class DemolitionDerbyStrategy implements IStrategy {
     private NPCar npCar;
     private Player player;
 
-    public DemolitionDerbyStrategy(NPCar npCar, Player player) {
+    public DemolitionDerbyStrategy(NPCar npCar, GameWorldProxy gameWorldProxy) {
         this.npCar = npCar;
-        this.player = player;
+        for (GameObject o : gameWorldProxy.getGameCollection()) {
+            if (o instanceof Player)
+                this.player = (Player) o;
+        }
     }
 
     @Override
     public double apply() {
-        Point nPoint = npCar.getLocation();
-        Point pPoint = player.getLocation();
+        double dy = npCar.getY() - player.getY();
+        double dx = npCar.getX() - player.getX();
 
-        npCar.setHeading(
-                Math.toDegrees(
-                        Math.atan2(
-                                nPoint.getY() - pPoint.getY(),
-                                nPoint.getX() - pPoint.getX()
-                        )
-                )
-        );
-        return player.getSpeed() - 2.5;
+        npCar.setHeading(Math.toDegrees(Math.atan2(dy, dx)) + 90);
+        return player.getSpeed() / 5;
     }
 }

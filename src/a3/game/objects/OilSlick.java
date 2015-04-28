@@ -2,15 +2,15 @@ package a3.game.objects;
 
 import java.awt.*;
 
-public class OilSlick extends Fixed {
+public class OilSlick extends Fixed implements IDrawable {
     private double length;
     private double width;
 
     public OilSlick() {
         this.setColor(Color.black);
         this.setLocation();
-        this.width = r.nextInt(45) + 10;
-        this.length = r.nextInt(45) + 10;
+        this.width = r.nextInt(15) + 10;
+        this.length = r.nextInt(15) + 10;
     }
 
     public double getLength() {
@@ -26,5 +26,11 @@ public class OilSlick extends Fixed {
         return "OilSlick: " + super.toString() +
                 ", length=" + this.getLength() +
                 ", width=" + this.getWidth();
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.setColor(this.getColor());
+        g.fillOval(round(getX() - (getLength() / 2)), round(getY() - (getLength() / 2)), round(getWidth()), round(getLength()));
     }
 }

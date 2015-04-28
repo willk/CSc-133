@@ -16,7 +16,7 @@ public interface IGameWorld {
 
     int getHighestPylon();
 
-    int getTime();
+    double getTime();
 
     int getLives();
 

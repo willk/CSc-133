@@ -9,24 +9,32 @@ import a3.game.views.ScoreView;
 import javax.swing.*;
 import java.awt.*;
 
+
 public class Game extends JFrame {
     private GameWorld gw;
     private MenuBarView mbv;
     private ButtonView bv;
     private ScoreView sv;
     private MapView mv;
+    private Timer timer;
+    private Dimension worldSize;
 
     public Game() {
-        gw = new GameWorld();
+        worldSize = new Dimension(1000, 720);
+
+        gw = new GameWorld(worldSize);
         mbv = new MenuBarView();
         bv = new ButtonView();
         sv = new ScoreView();
-        mv = new MapView();
+        mv = new MapView(worldSize);
         gw.initLayout();
         gw.addObserver(mbv);
         gw.addObserver(bv);
         gw.addObserver(sv);
         gw.addObserver(mv);
+
+        timer = new Timer(20, Tick.getInstance());
+        timer.start();
 
         this.setTitle("Race Car Game Extreme");
         this.setSize(1280, 800);
