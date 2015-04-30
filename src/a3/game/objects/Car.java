@@ -16,7 +16,7 @@ public class Car extends Movable implements ISteerable {
 
     public Car(Point location) {
         this.setSpeed(0);
-        this.setHeading(90);
+        this.setHeading(180);
         this.setDamage(0);
         this.setMaxSpeed(100);
         this.setFuel(100);
@@ -27,7 +27,7 @@ public class Car extends Movable implements ISteerable {
         this.setColor();
 
         this.setWidth(15);
-        this.setLength(10);
+        this.setHeight(10);
 
         this.setLocation(location);
     }
@@ -73,20 +73,8 @@ public class Car extends Movable implements ISteerable {
         this.damage = damage;
     }
 
-    public double getWidth() {
-        return width;
-    }
-
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
     public double getLength() {
         return length;
-    }
-
-    public void setLength(double length) {
-        this.length = length;
     }
 
     public boolean hit(double damage) {

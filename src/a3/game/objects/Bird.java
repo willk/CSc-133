@@ -23,6 +23,8 @@ public class Bird extends Movable implements IDrawable {
 
     public void setSize(int size) {
         this.size = size;
+        setWidth(size);
+        setHeight(size);
     }
 
     @Override

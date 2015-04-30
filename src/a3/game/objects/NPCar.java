@@ -36,7 +36,7 @@ public class NPCar extends Car implements IDrawable {
             setStrategy(new WillWinStrategy(this, gwp));
         else if (getStrategy() instanceof WillWinStrategy)
             setStrategy(new DemolitionDerbyStrategy(this, gwp));
-        else if (r.nextInt(2) == 0)
+        else if (r.nextInt(9) < 3)
             setStrategy(new DemolitionDerbyStrategy(this, gwp));
         else
             setStrategy(new WillWinStrategy(this, gwp));

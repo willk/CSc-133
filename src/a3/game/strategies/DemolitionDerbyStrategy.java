@@ -25,7 +25,7 @@ public class DemolitionDerbyStrategy implements IStrategy {
         double dy = npCar.getY() - player.getY();
         double dx = npCar.getX() - player.getX();
 
-        npCar.setHeading(Math.toDegrees(Math.atan2(dy, dx)) + 90);
+        npCar.setHeading(Math.toDegrees(Math.atan2(dy, dx)));
         return player.getSpeed() / 5;
     }
 }

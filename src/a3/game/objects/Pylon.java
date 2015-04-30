@@ -44,6 +44,8 @@ public class Pylon extends Fixed implements IDrawable {
 
     public void setRadius(double radius) {
         this.radius = radius;
+        setHeight(radius);
+        setWidth(radius);
     }
 
     public int getSequenceNumber() {

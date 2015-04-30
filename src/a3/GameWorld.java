@@ -11,18 +11,17 @@ import java.util.Random;
 public class GameWorld implements IGameWorld, IObservable {
 
     private final String version = "2.0";
-    private Factory f;
     private double time;
     private int lives;
-    private boolean sound;
+    private boolean sound, paused;
+    private Factory f;
     private Random r;
     private ArrayList<IObserver> observers;
     private GameCollection go;
     private Player player;
-    private NPCar npCar1;
-    private NPCar npCar2;
-    private NPCar npCar3;
     private Dimension worldSize;
+    private Audio[] audio;
+    private Audio theme, crash, slurp;
     private ArrayList<Point> pyp;
 
     public GameWorld(Dimension worldSize) {
@@ -35,6 +34,7 @@ public class GameWorld implements IGameWorld, IObservable {
         time = 0;
         lives = 3;
         sound = false;
+        paused = false;
 
         r = new Random(System.nanoTime());
 
@@ -56,17 +56,10 @@ public class GameWorld implements IGameWorld, IObservable {
         }
 
         // add cars
-//        addGameObject(player = new Player(new Point(20, 60)));
-//        addGameObject(npCar1 = new NPCar(new Point(20, 80), 0, new GameWorldProxy(this)));
-//        addGameObject(npCar2 = new NPCar(new Point(20, 100), 1, new GameWorldProxy(this)));
-//        addGameObject(npCar3 = new NPCar(new Point(20, 120), 2, new GameWorldProxy(this)));
-        addGameObject(player = new Player(new Point(450, 450)));
-        addGameObject(npCar1 = new NPCar(new Point(550, 500), 0, new GameWorldProxy(this)));
-        addGameObject(npCar2 = new NPCar(new Point(530, 500), 1, new GameWorldProxy(this)));
-        addGameObject(npCar3 = new NPCar(new Point(500, 500), 2, new GameWorldProxy(this)));
-//        npCar1.setStrategy(new WillWinStrategy(npCar1, new GameWorldProxy(this)));
-//        npCar2.setStrategy(new WillWinStrategy(npCar2, new GameWorldProxy(this)));
-//        npCar3.setStrategy(new DemolitionDerbyStrategy(npCar3, new GameWorldProxy(this)));
+        addGameObject(player = new Player(new Point(20, 60)));
+        addGameObject(new NPCar(new Point(20, 80), 0, new GameWorldProxy(this)));
+        addGameObject(new NPCar(new Point(20, 100), 1, new GameWorldProxy(this)));
+        addGameObject(new NPCar(new Point(20, 120), 2, new GameWorldProxy(this)));
 
 
         for (int i = 0; i < (r.nextInt(2) + 2); i++)
@@ -80,6 +73,8 @@ public class GameWorld implements IGameWorld, IObservable {
 
         addGameObject(new Bird());
         addGameObject(new Bird());
+
+        initAudio();
 
 //        f = new Factory(new GameWorldProxy(this), r);
 //
@@ -104,6 +99,15 @@ public class GameWorld implements IGameWorld, IObservable {
 //        addGameObject(f.mkBird());
 //
 //        f.start();
+    }
+
+    public void initAudio() {
+        crash = new Audio(new String[]{"ouch1.wav", "ouch2.wav", "ouch3.wav"});
+        slurp = new Audio(new String[]{"slurp1.wav", "slurp2.wav", "slurp3.wav", "slurp4.wav", "slurp5.wav"});
+        theme = new Audio(new String[]{"theme.wav"});
+        if (getSound())
+            theme.loop();
+        audio = new Audio[]{crash, slurp, theme};
     }
 
     public void setLives(int lives) {
@@ -276,6 +280,11 @@ public class GameWorld implements IGameWorld, IObservable {
 
     public void setSound(boolean sound) {
         this.sound = sound;
+
+        if (!sound)
+            for (Audio a : audio) a.stop();
+        else if (!paused) theme.loop();
+
         notifyObservers();
     }
 
@@ -364,6 +373,9 @@ public class GameWorld implements IGameWorld, IObservable {
             }
 
         npCar.hit(10);
+
+        if (sound)
+            crash.play();
 
         notifyObservers();
     }

@@ -45,7 +45,7 @@ public class WillWinStrategy implements IStrategy {
         double dx = npCar.getX() - pylon.getX();
 
 
-        npCar.setHeading(Math.toDegrees(Math.atan2(dy, dx)) + 90);
+        npCar.setHeading(Math.toDegrees(Math.atan2(dy, dx)));
         return getPlayerSpeed() / 5;
     }
 }

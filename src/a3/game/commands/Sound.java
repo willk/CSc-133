@@ -30,9 +30,6 @@ public class Sound extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (gameWorld.getSound())
-            gameWorld.setSound(false);
-        else
-            gameWorld.setSound(true);
+        gameWorld.setSound(!gameWorld.getSound());
     }
 }

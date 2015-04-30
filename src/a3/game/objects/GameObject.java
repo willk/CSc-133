@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
-public abstract class GameObject {
+public abstract class GameObject implements ICollider {
     Random r = new Random(System.nanoTime());
 
     protected final int _xMax = 1000;
@@ -15,6 +15,24 @@ public abstract class GameObject {
     private Point location;
     private Color color;
     private Boolean remove;
+    private double height;
+    private double width;
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
 
     public void setLocation() {
         this.location = new Point(r.nextInt(_xMax), r.nextInt(_yMax));
@@ -92,5 +110,16 @@ public abstract class GameObject {
     public String toString() {
         return "location=" + this.getLocation() +
                 ", color=" + this.getColor();
+    }
+
+    @Override
+    public boolean collidesWith(ICollider otherObject) {
+        Rectangle r1 = new Rectangle(centerObject(this.getX(), this.getY(), this.getWidth(), this.getHeight()));
+        return false;
+    }
+
+    @Override
+    public void handleCollision(ICollider otherObject) {
+
     }
 }

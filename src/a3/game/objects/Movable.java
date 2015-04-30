@@ -8,7 +8,7 @@ public abstract class Movable extends GameObject {
     private double heading;
 
     public void move(double time) {
-        double theta = Math.toRadians(getHeading() + 90);
+        double theta = Math.toRadians(getHeading() + 180);
         double dx = Math.cos(theta) * (this.getSpeed());
         double dy = Math.sin(theta) * (this.getSpeed());
 
