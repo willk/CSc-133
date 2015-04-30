@@ -1,7 +1,6 @@
 package a3.game.objects;
 
 import a3.GameWorldProxy;
-import a3.Point;
 import a3.game.strategies.DemolitionDerbyStrategy;
 import a3.game.strategies.IStrategy;
 import a3.game.strategies.WillWinStrategy;
@@ -73,6 +72,6 @@ public class NPCar extends Car implements IDrawable {
     @Override
     public void draw(Graphics g) {
         g.setColor(this.getColor());
-        g.drawRect(round(getX() - (getWidth() / 2)), round(getY() - (getLength() / 2)), round(getWidth()), round(getLength()));
+        g.drawRect(getX() - round(getWidth() / 2), getY() - round(getHeight() / 2), getWidth(), getHeight());
     }
 }

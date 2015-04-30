@@ -3,34 +3,24 @@ package a3.game.objects;
 import java.awt.*;
 
 public class OilSlick extends Fixed implements IDrawable {
-    private double length;
-    private double width;
 
     public OilSlick() {
         this.setColor(Color.black);
         this.setLocation();
-        this.width = r.nextInt(15) + 10;
-        this.length = r.nextInt(15) + 10;
-    }
-
-    public double getLength() {
-        return length;
-    }
-
-    public double getWidth() {
-        return width;
+        setHeight(r.nextInt(15) + 10);
+        setWidth(r.nextInt(15) + 10);
     }
 
     @Override
     public String toString() {
         return "OilSlick: " + super.toString() +
-                ", length=" + this.getLength() +
-                ", width=" + this.getWidth();
+                ", height=" + getHeight() +
+                ", width=" + getWidth();
     }
 
     @Override
     public void draw(Graphics g) {
         g.setColor(this.getColor());
-        g.fillOval(round(getX() - (getLength() / 2)), round(getY() - (getLength() / 2)), round(getWidth()), round(getLength()));
+        g.fillOval(getX() - round(getHeight() / 2), getY() - round(getWidth() / 2), getWidth(), getHeight());
     }
 }

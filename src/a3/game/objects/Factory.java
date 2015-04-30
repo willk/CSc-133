@@ -1,10 +1,10 @@
 package a3.game.objects;
 
 import a3.GameWorldProxy;
-import a3.Point;
 import a3.game.strategies.DemolitionDerbyStrategy;
 import a3.game.strategies.WillWinStrategy;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;

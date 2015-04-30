@@ -1,7 +1,5 @@
 package a3.game.objects;
 
-import a3.Point;
-
 import java.awt.*;
 
 public class Bird extends Movable implements IDrawable {

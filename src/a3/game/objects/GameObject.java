@@ -1,12 +1,10 @@
 package a3.game.objects;
 
-import a3.Point;
-
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
-public abstract class GameObject implements ICollider {
+public abstract class GameObject implements Collider {
     Random r = new Random(System.nanoTime());
 
     protected final int _xMax = 1000;
@@ -15,22 +13,22 @@ public abstract class GameObject implements ICollider {
     private Point location;
     private Color color;
     private Boolean remove;
-    private double height;
-    private double width;
+    private int height;
+    private int width;
 
-    public double getHeight() {
+    public int getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 
-    public double getWidth() {
+    public int getWidth() {
         return width;
     }
 
-    public void setWidth(double width) {
+    public void setWidth(int width) {
         this.width = width;
     }
 
@@ -58,12 +56,12 @@ public abstract class GameObject implements ICollider {
         return location;
     }
 
-    public double getX() {
-        return location.getX();
+    public int getX() {
+        return round(location.getX());
     }
 
-    public double getY() {
-        return location.getY();
+    public int getY() {
+        return round(location.getY());
     }
 
     public int round(double d) {
@@ -90,19 +88,19 @@ public abstract class GameObject implements ICollider {
         FontMetrics fm = g.getFontMetrics();
         Rectangle2D r = fm.getStringBounds(s, g);
 
-        return new Point((x - r.getWidth()) / 2, ((y - r.getHeight()) / 2) + fm.getAscent());
+        return new Point((x - round(r.getWidth()) / 2), ((y - round(r.getHeight()) / 2)) + fm.getAscent());
 
     }
 
-    public Point centerObject(double x, double y, double width, double length) {
-        return new Point(x - (width / 2), y - (length / 2));
+    public Point centerObject(int x, int y, int width, int length) {
+        return new Point(x - round(width / 2), y - round(length / 2));
     }
 
     public Point centerText(int s, int x, int y, Graphics g) {
         FontMetrics fm = g.getFontMetrics();
         Rectangle2D r = fm.getStringBounds(Integer.toString(s), g);
 
-        return new Point((x - r.getWidth()) / 2, ((y - r.getHeight()) / 2) + fm.getAscent());
+        return new Point(round(x - r.getWidth()) / 2, (round(y - r.getHeight()) / 2) + fm.getAscent());
 
     }
 
@@ -113,13 +111,26 @@ public abstract class GameObject implements ICollider {
     }
 
     @Override
-    public boolean collidesWith(ICollider otherObject) {
-        Rectangle r1 = new Rectangle(centerObject(this.getX(), this.getY(), this.getWidth(), this.getHeight()));
-        return false;
+    public boolean collidesWith(Collider obj) {
+        Rectangle r1 = new Rectangle(
+                centerObject(
+                        this.getX(),
+                        this.getY(),
+                        this.getWidth(),
+                        this.getHeight()));
+
+        Rectangle r2 = new Rectangle(
+                centerObject(
+                        ((GameObject) obj).getX(),
+                        ((GameObject) obj).getY(),
+                        ((GameObject) obj).getWidth(),
+                        ((GameObject) obj).getHeight()));
+
+        return r1.intersects(r2);
     }
 
     @Override
-    public void handleCollision(ICollider otherObject) {
-
+    public void handleCollision(Collider obj) {
+        System.out.println(this.toString() + "\nhit\n" + obj.toString());
     }
 }

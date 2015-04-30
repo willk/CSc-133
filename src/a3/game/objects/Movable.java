@@ -1,6 +1,7 @@
 package a3.game.objects;
 
-import a3.Point;
+
+import java.awt.*;
 
 public abstract class Movable extends GameObject {
 
@@ -13,7 +14,7 @@ public abstract class Movable extends GameObject {
         double dy = Math.sin(theta) * (this.getSpeed());
 
         Point p = this.getLocation();
-        p.translate(dx / 5, dy / 5);
+        p.translate(round(dx / 5), round(dy / 5));
         this.setLocation(p);
     }
 

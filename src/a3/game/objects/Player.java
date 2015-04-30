@@ -1,7 +1,5 @@
 package a3.game.objects;
 
-import a3.Point;
-
 import java.awt.*;
 
 /**
@@ -61,7 +59,7 @@ public class Player extends Car implements IDrawable {
     @Override
     public void draw(Graphics g) {
         g.setColor(this.getColor());
-        g.fillRect(round(getX() - (getWidth() / 2)), round(getY() - (getLength() / 2)), round(getWidth()), round(getLength()));
+        g.fillRect(getX() - round(getWidth() / 2), getY() - round(getHeight() / 2), getWidth(), getHeight());
     }
 }
 

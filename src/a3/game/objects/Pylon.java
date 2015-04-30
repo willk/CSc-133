@@ -1,11 +1,9 @@
 package a3.game.objects;
 
-import a3.Point;
-
 import java.awt.*;
 
 public class Pylon extends Fixed implements IDrawable {
-    private double radius;
+    private int radius;
     private int sequenceNumber;
     private boolean firstDraw;
     private Point cp, tp;
@@ -42,7 +40,7 @@ public class Pylon extends Fixed implements IDrawable {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(int radius) {
         this.radius = radius;
         setHeight(radius);
         setWidth(radius);
@@ -59,7 +57,7 @@ public class Pylon extends Fixed implements IDrawable {
     @Override
     public void draw(Graphics g) {
         if (firstDraw) {
-            cp = new a3.Point(getX() - (getRadius() / 2), getY() - (getRadius() / 2));
+            cp = new Point(getX() - round(getRadius() / 2), getY() - round(getRadius() / 2));
             tp = centerText(sequenceNumber, round(getRadius()), round(getRadius()), g);
             firstDraw = false;
         }

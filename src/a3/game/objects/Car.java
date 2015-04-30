@@ -1,12 +1,10 @@
 package a3.game.objects;
 
-import a3.Point;
+import java.awt.*;
 
 public class Car extends Movable implements ISteerable {
     private int pylon;
 
-    private double width;
-    private double length;
     private double maxSpeed;
     private double maxFuel;
     private double fuel;
@@ -73,10 +71,6 @@ public class Car extends Movable implements ISteerable {
         this.damage = damage;
     }
 
-    public double getLength() {
-        return length;
-    }
-
     public boolean hit(double damage) {
         // check to see if the car will exceed its maximum damage.
         if ((getDamage() + damage) < (getMaxDamage())) {
@@ -131,7 +125,7 @@ public class Car extends Movable implements ISteerable {
                 ", fuel=" + this.getFuel() +
                 ", maxSpeed=" + this.getMaxSpeed() +
                 ", width=" + this.getWidth() +
-                ", length=" + this.getLength();
+                ", length=" + getHeight();
     }
 
     @Override

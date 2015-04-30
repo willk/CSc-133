@@ -1,11 +1,12 @@
 package a3.game.strategies;
 
 import a3.GameWorldProxy;
-import a3.Point;
 import a3.game.objects.GameObject;
 import a3.game.objects.NPCar;
 import a3.game.objects.Player;
 import a3.game.objects.Pylon;
+
+import java.awt.*;
 
 
 /**

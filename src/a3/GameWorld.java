@@ -221,17 +221,17 @@ public class GameWorld implements IGameWorld, IObservable {
          */
         time++;
 
-        Dimension limits = worldSize;
-
         for (GameObject o : go)
             if (o instanceof Movable) {
                 ((Movable) o).move(getTime());
                 if (o instanceof Player)
-                    if (((Player) o).getFuel() < 1)
-                        lostLife();
-                    else if (((Player) o).getMaxSpeed() == 0)
-                        lostLife();
+                    if (((Player) o).getFuel() < 1 || ((Player) o).getMaxSpeed() == 0) lostLife();
             }
+
+        for (Collider o : go)
+            for (Collider o2 : go)
+                if (o != o2)
+                    if (o.collidesWith(o2)) o.handleCollision(o2);
 
         notifyObservers();
 
