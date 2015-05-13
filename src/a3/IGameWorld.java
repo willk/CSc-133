@@ -4,11 +4,15 @@ import a3.game.objects.GameCollection;
 import a3.game.objects.GameObject;
 import a3.game.objects.Player;
 
+import java.awt.*;
+
 /**
  * Created by William Kinderman on 3/20/15, 6:07 PM.
  */
 public interface IGameWorld {
     GameCollection getGameCollection();
+
+    void addToGraveyard(GameObject o);
 
     boolean getSound();
 
@@ -24,5 +28,11 @@ public interface IGameWorld {
 
     void addGameObject(GameObject o);
 
+    void addFuelCan();
+
+    void addFuelCan(Point p);
+
     Player getPlayer();
+
+    void addOilSlick(Point p);
 }

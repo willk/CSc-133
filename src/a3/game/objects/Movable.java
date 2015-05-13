@@ -8,8 +8,13 @@ public abstract class Movable extends GameObject {
     private double speed;
     private double heading;
 
+
     public void move(double time) {
-        double theta = Math.toRadians(getHeading() + 180);
+        double theta;
+        if (getX() <= 0 || getX() > 1100 || getY() <= 0 || getY() > 720)
+            this.setHeading(this.getHeading() + 90);
+        theta = Math.toRadians(getHeading() + 180);
+
         double dx = Math.cos(theta) * (this.getSpeed());
         double dy = Math.sin(theta) * (this.getSpeed());
 

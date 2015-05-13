@@ -1,5 +1,7 @@
 package a3.game.objects;
 
+import a3.GameWorldProxy;
+
 import java.awt.*;
 
 public class FuelCan extends Fixed implements IDrawable {
@@ -9,14 +11,18 @@ public class FuelCan extends Fixed implements IDrawable {
     private Point cp;
     private Point tp;
 
-    public FuelCan() {
+    public FuelCan(GameWorldProxy gameWorldProxy) {
         // When instantiating a fuel can make sure th value is between %5 and %30
         this.setColor(Color.red);
         this.setLocation();
         this.capacity = r.nextInt(25) + 10;
         this.size = 20;
+        this.setWidth(size);
+        this.setHeight(size);
         firstDraw = true;
+        setGWP(gameWorldProxy);
     }
+
 
     public int getSize() {
         return size;
@@ -47,5 +53,13 @@ public class FuelCan extends Fixed implements IDrawable {
 
         g.setColor(invertColor(this.getColor()));
         g.drawString(Integer.toString(getCapacity()), round(tp.getX() + cp.getX()), round(tp.getY() + cp.getY()));
+    }
+
+    @Override
+    public void handleCollision(Collider obj) {
+        if (obj instanceof Player) {
+            delete();
+            getGWP().addFuelCan();
+        }
     }
 }

@@ -30,6 +30,6 @@ public class PickUpFuelCan extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        gameWorld.pickUpFuel();
+        gameWorld.collideFuel();
     }
 }

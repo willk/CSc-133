@@ -1,5 +1,7 @@
 package a3.game.objects;
 
+import a3.GameWorldProxy;
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
@@ -7,14 +9,26 @@ import java.util.Random;
 public abstract class GameObject implements Collider {
     Random r = new Random(System.nanoTime());
 
-    protected final int _xMax = 1000;
+    protected final int _xMax = 1100;
     protected final int _yMax = 720;
 
     private Point location;
     private Color color;
-    private Boolean remove;
     private int height;
     private int width;
+    private GameWorldProxy gwp;
+
+    public GameWorldProxy getGWP() {
+        return gwp;
+    }
+
+    public void setGWP(GameWorldProxy gameWorldProxy) {
+        this.gwp = gameWorldProxy;
+    }
+
+    public void delete() {
+        gwp.addToGraveyard(this);
+    }
 
     public int getHeight() {
         return height;
@@ -76,14 +90,6 @@ public abstract class GameObject implements Collider {
         this.color = color;
     }
 
-    public Boolean remove() {
-        return remove;
-    }
-
-    public void setRemove(Boolean remove) {
-        this.remove = remove;
-    }
-
     public Point centerText(String s, int x, int y, Graphics g) {
         FontMetrics fm = g.getFontMetrics();
         Rectangle2D r = fm.getStringBounds(s, g);
@@ -117,20 +123,23 @@ public abstract class GameObject implements Collider {
                         this.getX(),
                         this.getY(),
                         this.getWidth(),
-                        this.getHeight()));
+                        this.getHeight()),
+                new Dimension(getWidth(), getHeight()));
 
         Rectangle r2 = new Rectangle(
                 centerObject(
                         ((GameObject) obj).getX(),
                         ((GameObject) obj).getY(),
                         ((GameObject) obj).getWidth(),
-                        ((GameObject) obj).getHeight()));
+                        ((GameObject) obj).getHeight()),
+                new Dimension(((GameObject) obj).getWidth(), ((GameObject) obj).getHeight()));
 
+        if (this instanceof Car && obj instanceof FuelCan && r1.intersects(r2)) {
+            System.currentTimeMillis();
+        }
         return r1.intersects(r2);
     }
 
     @Override
-    public void handleCollision(Collider obj) {
-        System.out.println(this.toString() + "\nhit\n" + obj.toString());
-    }
+    public void handleCollision(Collider obj) {}
 }

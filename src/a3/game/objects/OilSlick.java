@@ -5,10 +5,20 @@ import java.awt.*;
 public class OilSlick extends Fixed implements IDrawable {
 
     public OilSlick() {
-        this.setColor(Color.black);
-        this.setLocation();
+        setLocation();
+        init();
+    }
+
+    public OilSlick(Point p) {
+        setLocation(p);
+        init();
+    }
+
+    private void init() {
+        setColor(Color.black);
         setHeight(r.nextInt(15) + 10);
         setWidth(r.nextInt(15) + 10);
+
     }
 
     @Override

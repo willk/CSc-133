@@ -20,9 +20,9 @@ public class Game extends JFrame {
     private Dimension worldSize;
 
     public Game() {
-        worldSize = new Dimension(1000, 720);
+        worldSize = new Dimension(1100, 720);
 
-        gw = new GameWorld(worldSize);
+        gw = new GameWorld();
         mbv = new MenuBarView();
         bv = new ButtonView();
         sv = new ScoreView();
@@ -55,8 +55,6 @@ public class Game extends JFrame {
         Brake brake = Brake.getInstance();
         ChangeStrategy changeStrategy = ChangeStrategy.getInstance();
         CollideBird bird = CollideBird.getInstance();
-        CollideCar car = CollideCar.getInstance();
-        CollidePylon pylon = CollidePylon.getInstance();
         EnterOilSlick enterOilSlick = EnterOilSlick.getInstance();
         ExitOilSlick exitOilSlick = ExitOilSlick.getInstance();
         NewGame newGame = NewGame.getInstance();
@@ -77,8 +75,6 @@ public class Game extends JFrame {
         brake.setTarget(gw);
         changeStrategy.setTarget(gw);
         bird.setTarget(gw);
-        car.setTarget(gw);
-        pylon.setTarget(gw);
         enterOilSlick.setTarget(gw);
         exitOilSlick.setTarget(gw);
         newGame.setTarget(gw);

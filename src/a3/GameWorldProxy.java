@@ -4,6 +4,8 @@ import a3.game.objects.GameCollection;
 import a3.game.objects.GameObject;
 import a3.game.objects.Player;
 
+import java.awt.*;
+
 /**
  * Created by William Kinderman on 3/20/15, 6:37 PM.
  */
@@ -12,6 +14,11 @@ public class GameWorldProxy implements IGameWorld, IObservable {
 
     public GameWorldProxy(GameWorld gameWorld) {
         this.gameWorld = gameWorld;
+    }
+
+    @Override
+    public void addToGraveyard(GameObject o) {
+        gameWorld.addToGraveyard(o);
     }
 
     @Override
@@ -62,6 +69,21 @@ public class GameWorldProxy implements IGameWorld, IObservable {
     @Override
     public void addObserver(IObserver o) {
         gameWorld.addObserver(o);
+    }
+
+    @Override
+    public void addFuelCan() {
+        gameWorld.addFuelCan();
+    }
+
+    @Override
+    public void addFuelCan(Point p) {
+        gameWorld.addFuelCan(p);
+    }
+
+    @Override
+    public void addOilSlick(Point p) {
+        gameWorld.addFuelCan(p);
     }
 
     @Override

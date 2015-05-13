@@ -1,16 +1,15 @@
 package a3.game.objects;
 
 import java.awt.*;
+import java.util.HashMap;
 
 public class Car extends Movable implements ISteerable {
     private int pylon;
 
-    private double maxSpeed;
-    private double maxFuel;
-    private double fuel;
-    private double direction;
-    private double damage;
-    private double maxDamage;
+    private double maxSpeed, maxFuel, fuel, direction, damage, maxDamage;
+    private boolean traction;
+    private HashMap<Collider, Boolean> collisionMap;
+//    private ArrayList<Collider> collisionList;
 
     public Car(Point location) {
         this.setSpeed(0);
@@ -23,11 +22,23 @@ public class Car extends Movable implements ISteerable {
 
         this.pylon = 0;
         this.setColor();
+        this.traction = true;
 
         this.setWidth(15);
         this.setHeight(10);
 
         this.setLocation(location);
+
+//        this.collisionList = new ArrayList<Collider>();
+        this.collisionMap = new HashMap<Collider, Boolean>();
+    }
+
+    public void toggleTraction() {
+        this.traction = !traction;
+    }
+
+    public boolean hasTraction() {
+        return traction;
     }
 
     public double getMaxSpeed() {
@@ -116,6 +127,33 @@ public class Car extends Movable implements ISteerable {
         this.setMaxSpeed(100);
     }
 
+    public void collide(Collider obj) {
+        if (obj instanceof Bird) {
+            this.hit(5);
+        }
+        if (obj instanceof FuelCan) {
+            this.addFuel(((FuelCan) obj).getCapacity());
+        }
+        if (obj instanceof Car) {
+            this.hit(10);
+            if (this instanceof Player) {
+                if (r.nextInt(100) < 20) {
+                    getGWP().addOilSlick(((Car) obj).getLocation());
+                }
+            }
+        }
+
+        if (obj instanceof OilSlick) {
+
+        }
+
+        if (obj instanceof Pylon)
+            if (((Pylon) obj).getSequenceNumber() == this.pylon + 1)
+                pylon++;
+
+        if (this.getDamage() > 100) delete();
+    }
+
     @Override
     public String toString() {
         return super.toString() +
@@ -148,5 +186,10 @@ public class Car extends Movable implements ISteerable {
     public void steerLeft() {
         if (this.getDirection() > -40)
             this.setDirection(getDirection() - 5);
+    }
+
+    @Override
+    public void handleCollision(Collider obj) {
+        collide(obj);
     }
 }

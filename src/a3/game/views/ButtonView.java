@@ -22,9 +22,6 @@ public class ButtonView extends JPanel implements IObserver {
         this.setLayout(new GridLayout(10, 1));
         this.setBorder(new TitledBorder("Game Commands:"));
 
-        buttons.add(new JButton(CollideCar.getInstance()));
-        buttons.add(new JButton(CollidePylon.getInstance()));
-        buttons.add(new JButton(CollideBird.getInstance()));
         buttons.add(new JButton(PickUpFuelCan.getInstance()));
         buttons.add(new JButton(AddOilSlick.getInstance()));
         buttons.add(new JButton(EnterOilSlick.getInstance()));

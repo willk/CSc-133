@@ -1,5 +1,7 @@
 package a3.game.objects;
 
+import a3.GameWorldProxy;
+
 import java.awt.*;
 
 /**
@@ -9,20 +11,10 @@ public class Player extends Car implements IDrawable {
     /* Player:
      * There can only be one.
      */
-    private boolean traction;
-
-    public Player(Point p) {
+    public Player(Point p, GameWorldProxy gameWorldProxy) {
         super(p);
         this.setColor();
-        this.traction = true;
-    }
-
-    public void setTraction(boolean traction) {
-        this.traction = traction;
-    }
-
-    public boolean hasTraction() {
-        return traction;
+        setGWP(gameWorldProxy);
     }
 
     @Override
@@ -36,12 +28,6 @@ public class Player extends Car implements IDrawable {
     public void setSpeed(double speed) {
         if (this.hasTraction())
             super.setSpeed(speed);
-    }
-
-    @Override
-    public void reset() {
-        this.setTraction(true);
-        super.reset();
     }
 
     @Override

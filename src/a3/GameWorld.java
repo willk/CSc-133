@@ -6,7 +6,9 @@ import a3.game.strategies.WillWinStrategy;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.Stack;
 
 public class GameWorld implements IGameWorld, IObservable {
 
@@ -19,15 +21,10 @@ public class GameWorld implements IGameWorld, IObservable {
     private ArrayList<IObserver> observers;
     private GameCollection go;
     private Player player;
-    private Dimension worldSize;
     private Audio[] audio;
     private Audio theme, crash, slurp;
-    private ArrayList<Point> pyp;
-
-    public GameWorld(Dimension worldSize) {
-        this.worldSize = worldSize;
-    }
-
+    private Stack<GameObject> graveyard;
+    private HashMap<Collider, ArrayList<Collider>> colMap;
 
     public void initLayout() {
 
@@ -37,68 +34,75 @@ public class GameWorld implements IGameWorld, IObservable {
         paused = false;
 
         r = new Random(System.nanoTime());
+        graveyard = new Stack<GameObject>();
 
 
         go = new GameCollection();
         observers = new ArrayList<IObserver>();
 
-        pyp = new ArrayList<Point>();
-        pyp.add(new Point(150, 90));
-        pyp.add(new Point(850, 90));
-        pyp.add(new Point(850, 630));
-        pyp.add(new Point(500, 360));
-        pyp.add(new Point(150, 630));
-//        start = new Point(r.nextInt(), r.nextInt());
+        colMap = new HashMap<Collider, ArrayList<Collider>>();
 
-        // add pylons
-        for (int i = 0; i < pyp.size(); i++) {
-            addGameObject(new Pylon(pyp.get(i), i));
-        }
-
-        // add cars
-        addGameObject(player = new Player(new Point(20, 60)));
-        addGameObject(new NPCar(new Point(20, 80), 0, new GameWorldProxy(this)));
-        addGameObject(new NPCar(new Point(20, 100), 1, new GameWorldProxy(this)));
-        addGameObject(new NPCar(new Point(20, 120), 2, new GameWorldProxy(this)));
-
-
-        for (int i = 0; i < (r.nextInt(2) + 2); i++)
-            addGameObject(new FuelCan());
-
-        addGameObject(new OilSlick());
-        addGameObject(new OilSlick());
-        addGameObject(new OilSlick());
-        addGameObject(new OilSlick());
-        addGameObject(new OilSlick());
-
-        addGameObject(new Bird());
-        addGameObject(new Bird());
+//        pyp = new ArrayList<Point>();
+//        pyp.add(new Point(150, 90));
+//        pyp.add(new Point(850, 90));
+//        pyp.add(new Point(850, 630));
+//        pyp.add(new Point(500, 360));
+//        pyp.add(new Point(150, 630));
+////        start = new Point(r.nextInt(), r.nextInt());
+//
+//        // add pylons
+//        for (int i = 0; i < pyp.size(); i++) {
+//            addGameObject(new Pylon(pyp.get(i), i));
+//        }
+//
+//        // add cars
+//        addGameObject(player = new Player(new Point(20, 60)));
+//        addGameObject(new NPCar(new Point(20, 80), 0, new GameWorldProxy(this)));
+//        addGameObject(new NPCar(new Point(20, 100), 1, new GameWorldProxy(this)));
+//        addGameObject(new NPCar(new Point(20, 120), 2, new GameWorldProxy(this)));
+//
+//
+//        for (int i = 0; i < (r.nextInt(2) + 2); i++)
+//            addGameObject(new FuelCan());
+//
+//        addGameObject(new OilSlick());
+//        addGameObject(new OilSlick());
+//        addGameObject(new OilSlick());
+//        addGameObject(new OilSlick());
+//        addGameObject(new OilSlick());
+//
+//        addGameObject(new Bird());
+//        addGameObject(new Bird());
 
         initAudio();
 
-//        f = new Factory(new GameWorldProxy(this), r);
-//
-//        // add pylons
-//        for (int i = 0; i < 5; i++)
-//            addGameObject(f.mkPylon());
-//
-//        // add cars
-//        addGameObject(player = f.mkPlayer());
-//
-//        for (int i = 0; i < 3; i++) {
-//            addGameObject(f.mkNPCar());
-//        }
-//
-//        for (int i = 0; i < (r.nextInt(2) + 2); i++)
-//            addGameObject(f.mkFuelCan());
-//
-//        addGameObject(f.mkOilSlick());
-//        addGameObject(f.mkOilSlick());
-//
-//        addGameObject(f.mkBird());
-//        addGameObject(f.mkBird());
-//
-//        f.start();
+        f = new Factory(new GameWorldProxy(this), r);
+
+        // add pylons
+        for (int i = 0; i < 5; i++)
+            f.mkPylon();
+
+        // add cars
+        f.mkPlayer();
+
+        for (int i = 0; i < 3; i++) {
+            f.mkNPCar();
+        }
+
+        for (int i = 0; i < (r.nextInt(2) + 2); i++)
+            f.mkFuelCan();
+
+        f.mkOilSlick();
+        f.mkOilSlick();
+
+        f.mkBird();
+        f.mkBird();
+
+    }
+
+    @Override
+    public void addFuelCan() {
+        f.mkFuelCan();
     }
 
     public void initAudio() {
@@ -221,6 +225,7 @@ public class GameWorld implements IGameWorld, IObservable {
          */
         time++;
 
+
         for (GameObject o : go)
             if (o instanceof Movable) {
                 ((Movable) o).move(getTime());
@@ -228,16 +233,25 @@ public class GameWorld implements IGameWorld, IObservable {
                     if (((Player) o).getFuel() < 1 || ((Player) o).getMaxSpeed() == 0) lostLife();
             }
 
-        for (Collider o : go)
+        for (Collider o : go) {
+            if (!colMap.containsKey(o)) colMap.put(o, new ArrayList<Collider>());
             for (Collider o2 : go)
                 if (o != o2)
-                    if (o.collidesWith(o2)) o.handleCollision(o2);
+                    if (o.collidesWith(o2) && !colMap.get(o).contains(o2)) {
+                        colMap.get(o).add(o2);
+                        o.handleCollision(o2);
+                    }
+        }
+
+
+        for (; !graveyard.isEmpty(); go.remove(graveyard.pop())) {
+        }
 
         notifyObservers();
 
     }
 
-    public void pickUpFuel() {
+    public void collideFuel() {
         /*
          * 'f'
          * pretend player's car has collided with a fuel can.
@@ -261,7 +275,7 @@ public class GameWorld implements IGameWorld, IObservable {
                     break;
                 }
 
-        go.add(new FuelCan());
+        go.add(new FuelCan(new GameWorldProxy(this)));
 
         notifyObservers();
     }
@@ -297,7 +311,7 @@ public class GameWorld implements IGameWorld, IObservable {
 
         for (GameObject o : go)
             if (o instanceof Player)
-                ((Player) o).setTraction(false);
+                ((Player) o).toggleTraction();
 
         notifyObservers();
     }
@@ -311,7 +325,7 @@ public class GameWorld implements IGameWorld, IObservable {
 
         for (GameObject o : go)
             if (o instanceof Player)
-                ((Player) o).setTraction(true);
+                ((Player) o).toggleTraction();
 
         notifyObservers();
     }
@@ -323,11 +337,7 @@ public class GameWorld implements IGameWorld, IObservable {
          * Increase the damage to the car as described by description of Bird.
          */
 
-        for (GameObject o : go)
-            if (o instanceof Player)
-                if (((Player) o).hit(5))
-                    lostLife();
-
+        // TODO: insert code to handle bird collisions.
         notifyObservers();
     }
 
@@ -341,9 +351,7 @@ public class GameWorld implements IGameWorld, IObservable {
          *  has now reached the next sequential collidePylon.
          */
 
-        for (GameObject o : go)
-            if (o instanceof Player)
-                ((Player) o).setPylon(pylon);
+        // TODO: insert code to call objects collision
 
         notifyObservers();
     }
@@ -359,20 +367,7 @@ public class GameWorld implements IGameWorld, IObservable {
 
         // TODO: change the max speed of the colliding cars and ensure their speeds are not greater than the max speed.
 
-        NPCar npCar = null;
-
-        for (GameObject o : go)
-            if (o instanceof Player)
-                if (((Player) o).hit(10))
-                    this.lostLife();
-
-        for (GameObject o : go)
-            if (o instanceof NPCar) {
-                if (npCar == null) npCar = (NPCar) o;
-                if (((NPCar) o).getDamage() <= npCar.getDamage()) npCar = (NPCar) o;
-            }
-
-        npCar.hit(10);
+        // TODO: insert code to call objects collision.
 
         if (sound)
             crash.play();
@@ -400,6 +395,11 @@ public class GameWorld implements IGameWorld, IObservable {
     @Override
     public Player getPlayer() {
         return player;
+    }
+
+    @Override
+    public void addOilSlick(Point p) {
+        f.mkOilSlick(p);
     }
 
     @Override
@@ -448,6 +448,11 @@ public class GameWorld implements IGameWorld, IObservable {
     }
 
     @Override
+    public void addToGraveyard(GameObject o) {
+        graveyard.add(o);
+    }
+
+    @Override
     public void addObserver(IObserver o) {
         observers.add(o);
     }
@@ -456,5 +461,10 @@ public class GameWorld implements IGameWorld, IObservable {
     public void notifyObservers() {
         for (IObserver observer : observers)
             observer.update(new GameWorldProxy(this));
+    }
+
+    @Override
+    public void addFuelCan(Point p) {
+        f.mkFuelCan(p);
     }
 }
