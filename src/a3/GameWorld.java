@@ -4,27 +4,29 @@ import a3.game.objects.*;
 import a3.game.strategies.DemolitionDerbyStrategy;
 import a3.game.strategies.WillWinStrategy;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.Stack;
 
-public class GameWorld implements IGameWorld, IObservable {
+public class GameWorld implements IGameWorld, IObservable, ActionListener {
 
     private final String version = "2.0";
     private double time;
+    private Timer timer;
     private int lives;
+    private Object temp;
     private boolean sound, paused;
     private Factory f;
     private Random r;
     private ArrayList<IObserver> observers;
     private GameCollection go;
-    private Player player;
     private Audio[] audio;
-    private Audio theme, crash, slurp;
+    private Audio theme, crash, slurp, death;
     private Stack<GameObject> graveyard;
-    private HashMap<Collider, ArrayList<Collider>> colMap;
 
     public void initLayout() {
 
@@ -36,43 +38,8 @@ public class GameWorld implements IGameWorld, IObservable {
         r = new Random(System.nanoTime());
         graveyard = new Stack<GameObject>();
 
-
         go = new GameCollection();
         observers = new ArrayList<IObserver>();
-
-        colMap = new HashMap<Collider, ArrayList<Collider>>();
-
-//        pyp = new ArrayList<Point>();
-//        pyp.add(new Point(150, 90));
-//        pyp.add(new Point(850, 90));
-//        pyp.add(new Point(850, 630));
-//        pyp.add(new Point(500, 360));
-//        pyp.add(new Point(150, 630));
-////        start = new Point(r.nextInt(), r.nextInt());
-//
-//        // add pylons
-//        for (int i = 0; i < pyp.size(); i++) {
-//            addGameObject(new Pylon(pyp.get(i), i));
-//        }
-//
-//        // add cars
-//        addGameObject(player = new Player(new Point(20, 60)));
-//        addGameObject(new NPCar(new Point(20, 80), 0, new GameWorldProxy(this)));
-//        addGameObject(new NPCar(new Point(20, 100), 1, new GameWorldProxy(this)));
-//        addGameObject(new NPCar(new Point(20, 120), 2, new GameWorldProxy(this)));
-//
-//
-//        for (int i = 0; i < (r.nextInt(2) + 2); i++)
-//            addGameObject(new FuelCan());
-//
-//        addGameObject(new OilSlick());
-//        addGameObject(new OilSlick());
-//        addGameObject(new OilSlick());
-//        addGameObject(new OilSlick());
-//        addGameObject(new OilSlick());
-//
-//        addGameObject(new Bird());
-//        addGameObject(new Bird());
 
         initAudio();
 
@@ -98,6 +65,9 @@ public class GameWorld implements IGameWorld, IObservable {
         f.mkBird();
         f.mkBird();
 
+        timer = new Timer(20, this);
+        timer.start();
+
     }
 
     @Override
@@ -105,13 +75,49 @@ public class GameWorld implements IGameWorld, IObservable {
         f.mkFuelCan();
     }
 
+    @Override
+    public void addFuelCan(Point p, int capacity) {
+        f.mkFuelCan(p, capacity);
+    }
+
+    @Override
+    public boolean paused() {
+        return paused;
+    }
+
+    @Override
+    public void setTemp(Object o) {
+        temp = o;
+    }
+
+    @Override
+    public Object getTemp() {
+        return temp;
+    }
+
+    @Override
+    public void slurp() {
+        slurp.play();
+    }
+
+    @Override
+    public void crash() {
+        crash.play();
+    }
+
+    @Override
+    public void death() {
+        death.play();
+    }
+
     public void initAudio() {
         crash = new Audio(new String[]{"ouch1.wav", "ouch2.wav", "ouch3.wav"});
+        death = new Audio(new String[]{"ohnoes.wav"});
         slurp = new Audio(new String[]{"slurp1.wav", "slurp2.wav", "slurp3.wav", "slurp4.wav", "slurp5.wav"});
         theme = new Audio(new String[]{"theme.wav"});
         if (getSound())
             theme.loop();
-        audio = new Audio[]{crash, slurp, theme};
+        audio = new Audio[]{death, crash, slurp, theme};
     }
 
     public void setLives(int lives) {
@@ -212,6 +218,35 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
+    public void pause() {
+        paused = !paused;
+        if (paused) timer.stop();
+        else timer.start();
+        toggleSound();
+        notifyObservers();
+    }
+
+    public void delete() {
+        for (GameObject o : go) {
+            if (o instanceof ISelectable) {
+                if (((ISelectable) o).selected()) {
+                    if (o instanceof Pylon) {
+                        decrementPylons(((Pylon) o).getSequenceNumber());
+                    }
+                    o.delete();
+                }
+            }
+        }
+    }
+
+    public void decrementPylons(int i) {
+        for (GameObject o : go) {
+            if (o instanceof Pylon)
+                if (((Pylon) o).getSequenceNumber() > i)
+                    ((Pylon) o).setSequenceNumber(((Pylon) o).getSequenceNumber() - 1);
+        }
+    }
+
     public void tick() {
         /*
          * 't'
@@ -234,11 +269,9 @@ public class GameWorld implements IGameWorld, IObservable {
             }
 
         for (Collider o : go) {
-            if (!colMap.containsKey(o)) colMap.put(o, new ArrayList<Collider>());
             for (Collider o2 : go)
                 if (o != o2)
-                    if (o.collidesWith(o2) && !colMap.get(o).contains(o2)) {
-                        colMap.get(o).add(o2);
+                    if (o.collidesWith(o2)) {
                         o.handleCollision(o2);
                     }
         }
@@ -292,8 +325,8 @@ public class GameWorld implements IGameWorld, IObservable {
         notifyObservers();
     }
 
-    public void setSound(boolean sound) {
-        this.sound = sound;
+    public void toggleSound() {
+        this.sound = !sound;
 
         if (!sound)
             for (Audio a : audio) a.stop();
@@ -393,13 +426,13 @@ public class GameWorld implements IGameWorld, IObservable {
     }
 
     @Override
-    public Player getPlayer() {
-        return player;
+    public void addOilSlick(Point p) {
+        f.mkOilSlick(p);
     }
 
     @Override
-    public void addOilSlick(Point p) {
-        f.mkOilSlick(p);
+    public void addPylon(Point point, int pylon) {
+        f.mkPylon(point, pylon);
     }
 
     @Override
@@ -464,7 +497,7 @@ public class GameWorld implements IGameWorld, IObservable {
     }
 
     @Override
-    public void addFuelCan(Point p) {
-        f.mkFuelCan(p);
+    public void actionPerformed(ActionEvent e) {
+        tick();
     }
 }

@@ -16,7 +16,6 @@ public class Game extends JFrame {
     private ButtonView bv;
     private ScoreView sv;
     private MapView mv;
-    private Timer timer;
     private Dimension worldSize;
 
     public Game() {
@@ -33,9 +32,6 @@ public class Game extends JFrame {
         gw.addObserver(sv);
         gw.addObserver(mv);
 
-        timer = new Timer(20, Tick.getInstance());
-        timer.start();
-
         this.setTitle("Race Car Game Extreme");
         this.setSize(1280, 800);
         this.setLocationRelativeTo(null);
@@ -51,15 +47,14 @@ public class Game extends JFrame {
 
         About about = About.getInstance();
         Accelerate accelerate = Accelerate.getInstance();
-        AddOilSlick addOilSlick = AddOilSlick.getInstance();
+        AddFuelCan addFuelCan = AddFuelCan.getInstance();
+        AddPylon addPylon = AddPylon.getInstance();
         Brake brake = Brake.getInstance();
-        ChangeStrategy changeStrategy = ChangeStrategy.getInstance();
-        CollideBird bird = CollideBird.getInstance();
+        Delete delete = Delete.getInstance();
         EnterOilSlick enterOilSlick = EnterOilSlick.getInstance();
         ExitOilSlick exitOilSlick = ExitOilSlick.getInstance();
-        NewGame newGame = NewGame.getInstance();
         NewColors newColors = NewColors.getInstance();
-        PickUpFuelCan pickUpFuelCan = PickUpFuelCan.getInstance();
+        Pause pause = Pause.getInstance();
         Quit quit = Quit.getInstance();
         SaveGame saveGame = SaveGame.getInstance();
         Sound sound = Sound.getInstance();
@@ -71,21 +66,23 @@ public class Game extends JFrame {
 
         about.setTarget(gw);
         accelerate.setTarget(gw);
-        addOilSlick.setTarget(gw);
+        addFuelCan.setTarget(gw);
+        addPylon.setTarget(gw);
         brake.setTarget(gw);
-        changeStrategy.setTarget(gw);
-        bird.setTarget(gw);
+        delete.setTarget(gw);
         enterOilSlick.setTarget(gw);
         exitOilSlick.setTarget(gw);
-        newGame.setTarget(gw);
         newColors.setTarget(gw);
-        pickUpFuelCan.setTarget(gw);
+        pause.setTarget(gw);
         quit.setTarget(gw);
         saveGame.setTarget(gw);
         sound.setTarget(gw);
         tick.setTarget(gw);
         turnLeft.setTarget(gw);
         turnRight.setTarget(gw);
+
+        addFuelCan.setMV(mv);
+        addPylon.setMV(mv);
 
         this.setVisible(true);
         this.requestFocus();

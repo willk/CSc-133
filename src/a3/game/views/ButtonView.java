@@ -1,5 +1,6 @@
 package a3.game.views;
 
+import a3.GameWorldProxy;
 import a3.IObservable;
 import a3.IObserver;
 import a3.game.commands.*;
@@ -15,20 +16,29 @@ import java.util.ArrayList;
  */
 public class ButtonView extends JPanel implements IObserver {
     private ArrayList<JButton> buttons;
+    private JButton pause, delete, addPylon, addFuel, quit;
 
     public ButtonView() {
         buttons = new ArrayList<JButton>();
 
-        this.setLayout(new GridLayout(10, 1));
+        this.setLayout(new GridLayout(20, 1));
         this.setBorder(new TitledBorder("Game Commands:"));
 
-        buttons.add(new JButton(PickUpFuelCan.getInstance()));
-        buttons.add(new JButton(AddOilSlick.getInstance()));
-        buttons.add(new JButton(EnterOilSlick.getInstance()));
-        buttons.add(new JButton(ExitOilSlick.getInstance()));
-        buttons.add(new JButton(ChangeStrategy.getInstance()));
-        buttons.add(new JButton(Tick.getInstance()));
-        buttons.add(new JButton(Quit.getInstance()));
+        pause = new JButton(Pause.getInstance());
+        delete = new JButton(Delete.getInstance());
+        addPylon = new JButton(AddPylon.getInstance());
+        addFuel = new JButton(AddFuelCan.getInstance());
+        quit = new JButton(Quit.getInstance());
+
+        delete.setEnabled(false);
+        addPylon.setEnabled(false);
+        addFuel.setEnabled(false);
+
+        buttons.add(pause);
+        buttons.add(delete);
+        buttons.add(addPylon);
+        buttons.add(addFuel);
+        buttons.add(quit);
 
         for (JButton button : buttons) {
             button.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), "none");
@@ -38,6 +48,16 @@ public class ButtonView extends JPanel implements IObserver {
 
     @Override
     public void update(IObservable o) {
-
+        if (((GameWorldProxy) o).paused()) {
+            pause.setText("Play");
+            delete.setEnabled(true);
+            addPylon.setEnabled(true);
+            addFuel.setEnabled(true);
+        } else {
+            pause.setText("Pause");
+            delete.setEnabled(false);
+            addPylon.setEnabled(false);
+            addFuel.setEnabled(false);
+        }
     }
 }

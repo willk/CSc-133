@@ -1,29 +1,34 @@
 package a3.game.objects;
 
+import a3.GameWorldProxy;
+
 import java.awt.*;
 
-public class Pylon extends Fixed implements IDrawable {
+public class Pylon extends Fixed implements IDrawable, ISelectable {
     private int radius;
     private int sequenceNumber;
     private boolean firstDraw;
     private Point cp, tp;
+    private boolean selected;
 
-    public Pylon(int number) {
+    public Pylon(int number, GameWorldProxy gwp) {
         this.setLocation();
-        init(number);
+        init(number, gwp);
     }
 
-    public Pylon(Point location, int number) {
+    public Pylon(Point location, int number, GameWorldProxy gwp) {
         this.setLocation(location);
-        init(number);
+        init(number, gwp);
 
     }
 
-    public void init(int number) {
+    public void init(int number, GameWorldProxy gwp) {
         this.setRadius(50);
         this.setColor(Color.orange);
         this.setSequenceNumber(number);
+        this.setGWP(gwp);
         this.firstDraw = true;
+        this.selected = false;
     }
 
     public void setColor() {
@@ -55,6 +60,30 @@ public class Pylon extends Fixed implements IDrawable {
     }
 
     @Override
+    public void select(boolean selected) {
+        this.selected = selected;
+    }
+
+    @Override
+    public boolean selected() {
+        return selected;
+    }
+
+    @Override
+    public boolean contains(Point p) {
+        Rectangle r = new Rectangle(
+                centerObject(
+                        this.getX(),
+                        this.getY(),
+                        this.getWidth(),
+                        this.getHeight()),
+                new Dimension(this.getWidth(), this.getHeight()));
+
+        return r.contains(p);
+
+    }
+
+    @Override
     public void draw(Graphics g) {
         if (firstDraw) {
             cp = new Point(getX() - round(getRadius() / 2), getY() - round(getRadius() / 2));
@@ -62,11 +91,19 @@ public class Pylon extends Fixed implements IDrawable {
             firstDraw = false;
         }
 
-        g.setColor(this.getColor());
-        g.fillOval(round(cp.getX()), round(cp.getY()), round(getRadius()), round(getRadius()));
+        if (!selected) {
+            g.setColor(this.getColor());
+            g.fillOval(round(cp.getX()), round(cp.getY()), round(getRadius()), round(getRadius()));
 
+            g.setColor(invertColor(this.getColor()));
+            g.drawString(Integer.toString(sequenceNumber), round(tp.getX() + cp.getX()), round(tp.getY() + cp.getY()));
+        } else {
+            g.setColor(invertColor(this.getColor()));
+            g.fillOval(round(cp.getX()), round(cp.getY()), round(getRadius()), round(getRadius()));
 
-        g.setColor(invertColor(this.getColor()));
-        g.drawString(Integer.toString(sequenceNumber), round(tp.getX() + cp.getX()), round(tp.getY() + cp.getY()));
+            g.setColor(this.getColor());
+            g.drawString(Integer.toString(sequenceNumber), round(tp.getX() + cp.getX()), round(tp.getY() + cp.getY()));
+        }
+
     }
 }

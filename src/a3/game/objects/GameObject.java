@@ -4,6 +4,7 @@ import a3.GameWorldProxy;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 import java.util.Random;
 
 public abstract class GameObject implements Collider {
@@ -17,6 +18,7 @@ public abstract class GameObject implements Collider {
     private int height;
     private int width;
     private GameWorldProxy gwp;
+    private HashMap<Collider, Boolean> collisionMap = new HashMap<Collider, Boolean>();
 
     public GameWorldProxy getGWP() {
         return gwp;
@@ -134,10 +136,22 @@ public abstract class GameObject implements Collider {
                         ((GameObject) obj).getHeight()),
                 new Dimension(((GameObject) obj).getWidth(), ((GameObject) obj).getHeight()));
 
-        if (this instanceof Car && obj instanceof FuelCan && r1.intersects(r2)) {
-            System.currentTimeMillis();
-        }
+        // if we're colliding
+        if (r1.intersects(r2) && !collisionMap.containsKey(obj)) collisionMap.put(obj, false);
+            // if we're looking at an object that is contained within the collision list and
+            // they are not intersecting any more, remove that object
+        else if (collisionMap.containsKey(obj) && !r1.intersects(r2)) collisionMap.remove(obj);
+
+
         return r1.intersects(r2);
+    }
+
+    public HashMap<Collider, Boolean> getCollisionMap() {
+        return collisionMap;
+    }
+
+    public void inHit(Collider obj) {
+        collisionMap.put(obj, true);
     }
 
     @Override

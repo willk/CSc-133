@@ -2,7 +2,6 @@ package a3;
 
 import a3.game.objects.GameCollection;
 import a3.game.objects.GameObject;
-import a3.game.objects.Player;
 
 import java.awt.*;
 
@@ -30,9 +29,21 @@ public interface IGameWorld {
 
     void addFuelCan();
 
-    void addFuelCan(Point p);
-
-    Player getPlayer();
+    void addFuelCan(Point p, int capacity);
 
     void addOilSlick(Point p);
+
+    void addPylon(Point point, int pylon);
+
+    boolean paused();
+
+    void setTemp(Object o);
+
+    Object getTemp();
+
+    void slurp();
+
+    void crash();
+
+    void death();
 }

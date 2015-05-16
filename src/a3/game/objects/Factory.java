@@ -88,19 +88,24 @@ public class Factory {
         pylonOne = true;
         Pylon p;
 
-        if (!ppd.isEmpty()) p = new Pylon(ppd.pop(), pylonNumber++);
-        else p = new Pylon(pylonNumber++);
+        if (!ppd.isEmpty()) p = new Pylon(ppd.pop(), pylonNumber++, gwp);
+        else p = new Pylon(pylonNumber++, gwp);
 
         add(p);
+    }
+
+    public void mkPylon(Point p, int i) {
+        add(new Pylon(p, i, gwp));
     }
 
     public void mkFuelCan() {
         add(new FuelCan(gwp));
     }
 
-    public void mkFuelCan(Point p) {
+    public void mkFuelCan(Point p, int capacity) {
         FuelCan f = new FuelCan(gwp);
         f.setLocation(p);
+        f.setCapacity(capacity);
         add(f);
     }
 

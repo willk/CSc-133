@@ -2,7 +2,6 @@ package a3;
 
 import a3.game.objects.GameCollection;
 import a3.game.objects.GameObject;
-import a3.game.objects.Player;
 
 import java.awt.*;
 
@@ -21,9 +20,39 @@ public class GameWorldProxy implements IGameWorld, IObservable {
         gameWorld.addToGraveyard(o);
     }
 
+//    @Override
+//    public Player getPlayer() {
+//        return gameWorld.getPlayer();
+//    }
+
     @Override
-    public Player getPlayer() {
-        return gameWorld.getPlayer();
+    public boolean paused() {
+        return gameWorld.paused();
+    }
+
+    @Override
+    public void setTemp(Object o) {
+        gameWorld.setTemp(o);
+    }
+
+    @Override
+    public Object getTemp() {
+        return gameWorld.getTemp();
+    }
+
+    @Override
+    public void slurp() {
+        gameWorld.slurp();
+    }
+
+    @Override
+    public void crash() {
+        gameWorld.crash();
+    }
+
+    @Override
+    public void death() {
+        gameWorld.death();
     }
 
     @Override
@@ -77,13 +106,18 @@ public class GameWorldProxy implements IGameWorld, IObservable {
     }
 
     @Override
-    public void addFuelCan(Point p) {
-        gameWorld.addFuelCan(p);
+    public void addFuelCan(Point p, int capacity) {
+        gameWorld.addFuelCan(p, capacity);
     }
 
     @Override
     public void addOilSlick(Point p) {
-        gameWorld.addFuelCan(p);
+        gameWorld.addOilSlick(p);
+    }
+
+    @Override
+    public void addPylon(Point point, int pylon) {
+        gameWorld.addPylon(point, pylon);
     }
 
     @Override

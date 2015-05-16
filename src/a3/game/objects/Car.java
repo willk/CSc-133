@@ -1,15 +1,15 @@
 package a3.game.objects;
 
+import a3.game.commands.EnterOilSlick;
+import a3.game.commands.ExitOilSlick;
+
 import java.awt.*;
-import java.util.HashMap;
 
 public class Car extends Movable implements ISteerable {
     private int pylon;
 
     private double maxSpeed, maxFuel, fuel, direction, damage, maxDamage;
     private boolean traction;
-    private HashMap<Collider, Boolean> collisionMap;
-//    private ArrayList<Collider> collisionList;
 
     public Car(Point location) {
         this.setSpeed(0);
@@ -24,13 +24,10 @@ public class Car extends Movable implements ISteerable {
         this.setColor();
         this.traction = true;
 
-        this.setWidth(15);
-        this.setHeight(10);
+        this.setWidth(25);
+        this.setHeight(15);
 
         this.setLocation(location);
-
-//        this.collisionList = new ArrayList<Collider>();
-        this.collisionMap = new HashMap<Collider, Boolean>();
     }
 
     public void toggleTraction() {
@@ -84,7 +81,7 @@ public class Car extends Movable implements ISteerable {
 
     public boolean hit(double damage) {
         // check to see if the car will exceed its maximum damage.
-        if ((getDamage() + damage) < (getMaxDamage())) {
+        if ((getDamage() + damage) <= (getMaxDamage())) {
             this.setDamage(this.getDamage() + damage);
             this.setMaxSpeed(this.getMaxSpeed() - damage);
             return false;
@@ -119,39 +116,24 @@ public class Car extends Movable implements ISteerable {
     }
 
     public void reset() {
-        // TODO: Reset to pylon 1
+        Point p = null;
+        int n = Integer.MAX_VALUE;
+
+        for (GameObject o : getGWP().getGameCollection()) {
+            if (o instanceof Pylon)
+                if (((Pylon) o).getSequenceNumber() < n) {
+                    p = (Point) o.getLocation().clone();
+                    n = ((Pylon) o).getSequenceNumber();
+                }
+        }
+
+        if (p != null)
+            this.setLocation(p);
         this.setFuel(100);
         this.setDamage(0);
         this.setSpeed(0);
         this.setHeading(0);
         this.setMaxSpeed(100);
-    }
-
-    public void collide(Collider obj) {
-        if (obj instanceof Bird) {
-            this.hit(5);
-        }
-        if (obj instanceof FuelCan) {
-            this.addFuel(((FuelCan) obj).getCapacity());
-        }
-        if (obj instanceof Car) {
-            this.hit(10);
-            if (this instanceof Player) {
-                if (r.nextInt(100) < 20) {
-                    getGWP().addOilSlick(((Car) obj).getLocation());
-                }
-            }
-        }
-
-        if (obj instanceof OilSlick) {
-
-        }
-
-        if (obj instanceof Pylon)
-            if (((Pylon) obj).getSequenceNumber() == this.pylon + 1)
-                pylon++;
-
-        if (this.getDamage() > 100) delete();
     }
 
     @Override
@@ -190,6 +172,50 @@ public class Car extends Movable implements ISteerable {
 
     @Override
     public void handleCollision(Collider obj) {
-        collide(obj);
+        boolean hasSlick = false;
+        // if object is in the list of objects that we are currently colliding with
+        // and the object has not already been hit.
+        if (getCollisionMap().containsKey(obj) && !getCollisionMap().get(obj)) {
+            // Change the inHit value.
+            inHit(obj);
+
+            if (obj instanceof Bird) {
+                this.hit(5);
+            }
+            if (obj instanceof FuelCan) {
+                this.addFuel(((FuelCan) obj).getCapacity());
+                getGWP().slurp();
+            }
+            if (obj instanceof Car) {
+                this.hit(10);
+                if (this instanceof Player) {
+                    getGWP().crash();
+                    if (r.nextInt(100) < 20) {
+                        getGWP().addOilSlick((Point) ((Car) obj).getLocation().clone());
+                    }
+                }
+            }
+
+            if (obj instanceof OilSlick) {
+                EnterOilSlick.getInstance();
+            }
+
+            if (obj instanceof Pylon)
+                if (((Pylon) obj).getSequenceNumber() == this.pylon + 1)
+                    pylon++;
+
+            if (this.getDamage() > 100) {
+                if (this instanceof Player) {
+                    getGWP().death();
+                }
+                delete();
+            }
+
+            for (Collider o : getCollisionMap().keySet())
+                if (o instanceof OilSlick)
+                    hasSlick = true;
+
+            if (!hasSlick && !traction) ExitOilSlick.getInstance();
+        }
     }
 }
