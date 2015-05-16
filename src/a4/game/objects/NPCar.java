@@ -6,6 +6,7 @@ import a4.game.strategies.IStrategy;
 import a4.game.strategies.WillWinStrategy;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 /**
  * Created by William Kinderman on 3/15/15.
@@ -14,12 +15,16 @@ public class NPCar extends Car implements IDrawable {
     private IStrategy strategy;
     private GameWorldProxy gwp;
     private int uid;
+    private AffineTransform translate, rotate, scale;
 
     public NPCar(Point p, int uid, GameWorldProxy gameWorldProxy) {
         super(p);
         this.uid = uid;
         this.gwp = gameWorldProxy;
         this.changeStrategy();
+        this.translate = new AffineTransform();
+        this.rotate = new AffineTransform();
+        this.scale = new AffineTransform();
     }
 
     public IStrategy getStrategy() {

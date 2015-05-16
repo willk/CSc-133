@@ -3,13 +3,13 @@ package a4.game.objects;
 import a4.GameWorldProxy;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 public class Pylon extends Fixed implements IDrawable, ISelectable {
-    private int radius;
-    private int sequenceNumber;
-    private boolean firstDraw;
+    private int radius, sequenceNumber;
+    private boolean firstDraw, selected;
     private Point cp, tp;
-    private boolean selected;
+    private AffineTransform translate, rotate, scale;
 
     public Pylon(int number, GameWorldProxy gwp) {
         this.setLocation();
@@ -29,6 +29,9 @@ public class Pylon extends Fixed implements IDrawable, ISelectable {
         this.setGWP(gwp);
         this.firstDraw = true;
         this.selected = false;
+        this.translate = new AffineTransform();
+        this.rotate = new AffineTransform();
+        this.scale = new AffineTransform();
     }
 
     public void setColor() {

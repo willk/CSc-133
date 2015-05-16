@@ -1,8 +1,11 @@
 package a4.game.objects;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 public class OilSlick extends Fixed implements IDrawable {
+
+    private AffineTransform translate, rotate, scale;
 
     public OilSlick() {
         setLocation();
@@ -18,6 +21,9 @@ public class OilSlick extends Fixed implements IDrawable {
         setColor(Color.black);
         setHeight(r.nextInt(15) + 10);
         setWidth(r.nextInt(15) + 10);
+        this.translate = new AffineTransform();
+        this.rotate = new AffineTransform();
+        this.scale = new AffineTransform();
 
     }
 

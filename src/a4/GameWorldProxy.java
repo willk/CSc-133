@@ -56,6 +56,26 @@ public class GameWorldProxy implements IGameWorld, IObservable {
     }
 
     @Override
+    public int getXMin() {
+        return gameWorld.getXMin();
+    }
+
+    @Override
+    public int getXMax() {
+        return gameWorld.getXMax();
+    }
+
+    @Override
+    public int getYMin() {
+        return gameWorld.getYMin();
+    }
+
+    @Override
+    public int getYMax() {
+        return gameWorld.getYMin();
+    }
+
+    @Override
     public GameCollection getGameCollection() {
         return gameWorld.getGameCollection();
     }

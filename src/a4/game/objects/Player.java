@@ -3,6 +3,7 @@ package a4.game.objects;
 import a4.GameWorldProxy;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 /**
  * Created by William Kinderman on 3/15/15.
@@ -11,10 +12,15 @@ public class Player extends Car implements IDrawable {
     /* Player:
      * There can only be one.
      */
+    private AffineTransform translate, rotate, scale;
+
     public Player(Point p, GameWorldProxy gameWorldProxy) {
         super(p);
         this.setColor();
         setGWP(gameWorldProxy);
+        this.translate = new AffineTransform();
+        this.rotate = new AffineTransform();
+        this.scale = new AffineTransform();
     }
 
     @Override
@@ -44,8 +50,19 @@ public class Player extends Car implements IDrawable {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(this.getColor());
-        g.fillRect(getX() - round(getWidth() / 2), getY() - round(getHeight() / 2), getWidth(), getHeight());
+
+        Graphics2D g2d = (Graphics2D) g;
+        AffineTransform at = g2d.getTransform();
+
+        g2d.transform(rotate);
+        g2d.transform(scale);
+        g2d.transform(translate);
+
+        g2d.setColor(this.getColor());
+        g2d.fillRect(-round(getWidth() / 2), -round(getHeight() / 2), getWidth(), getHeight());
+
+
+        g2d.transform(at);
     }
 }
 

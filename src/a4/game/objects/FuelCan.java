@@ -3,13 +3,13 @@ package a4.game.objects;
 import a4.GameWorldProxy;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 public class FuelCan extends Fixed implements IDrawable, ISelectable {
-    private int size;
-    private int capacity;
+    private int size, capacity;
     private boolean firstDraw, selected;
-    private Point cp;
-    private Point tp;
+    private Point cp, tp;
+    private AffineTransform translate, rotate, scale;
 
     public FuelCan(GameWorldProxy gwp) {
         // When instantiating a fuel can make sure th value is between %5 and %30
@@ -22,6 +22,9 @@ public class FuelCan extends Fixed implements IDrawable, ISelectable {
         this.firstDraw = true;
         this.selected = false;
         setGWP(gwp);
+        this.translate = new AffineTransform();
+        this.rotate = new AffineTransform();
+        this.scale = new AffineTransform();
     }
 
 

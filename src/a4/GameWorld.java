@@ -28,6 +28,11 @@ public class GameWorld implements IGameWorld, IObservable, ActionListener {
     private Audio theme, crash, slurp, death;
     private Stack<GameObject> graveyard;
 
+    private static final int xmin = 0;
+    private static final int xmax = 1141;
+    private static final int ymin = 0;
+    private static final int ymax = 730;
+
     public void initLayout() {
 
         time = 0;
@@ -108,6 +113,26 @@ public class GameWorld implements IGameWorld, IObservable, ActionListener {
     @Override
     public void death() {
         death.play();
+    }
+
+    @Override
+    public int getXMin() {
+        return xmin;
+    }
+
+    @Override
+    public int getXMax() {
+        return xmax;
+    }
+
+    @Override
+    public int getYMin() {
+        return ymin;
+    }
+
+    @Override
+    public int getYMax() {
+        return ymax;
     }
 
     public void initAudio() {

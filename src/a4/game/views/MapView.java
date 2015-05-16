@@ -13,27 +13,32 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 
 /**
  * Created by William Kinderman on 3/14/15, 6:45 PM, 6:45 PM.
  */
 public class MapView extends JPanel implements IObserver, MouseListener {
     GameWorldProxy gwp;
-    Dimension worldSize;
     Boolean fuel, pylon;
 
-    public MapView(Dimension worldSize) {
+    int left, right, top, bottom;
+    AffineTransform wToND, ndToScreen, vtm;
+
+    public MapView(GameWorldProxy gwp) {
+        this.gwp = gwp;
 
         this.fuel = false;
         this.pylon = false;
 
-        this.worldSize = worldSize;
+        left = gwp.getXMin();
+        right = gwp.getXMax();
+        top = gwp.getYMax();
+        bottom = gwp.getYMin();
+
         this.setLayout(new BorderLayout());
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(66, 11, 127)));
-        this.setPreferredSize(worldSize);
-        this.setMaximumSize(worldSize);
-        this.setMinimumSize(worldSize);
         this.addMouseListener(this);
 
         // Create key maps.
@@ -59,38 +64,8 @@ public class MapView extends JPanel implements IObserver, MouseListener {
         actionMap.put(KeyEvent.VK_RIGHT, TurnRight.getInstance());
         actionMap.put(KeyEvent.VK_T, Tick.getInstance());
         actionMap.put(KeyEvent.VK_DELETE, Delete.getInstance());
-    }
 
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        for (Object o : gwp.getGameCollection())
-            if (o instanceof IDrawable)
-                ((IDrawable) o).draw(g);
-    }
-
-    @Override
-    public void update(IObservable gwp) {
-        this.gwp = (GameWorldProxy) gwp;
-        this.repaint();
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        if (gwp.paused()) {
-            if (fuel) {
-                toggleFuel();
-                pylon = false;
-                gwp.addFuelCan(e.getPoint(), this.getCapacity());
-            } else if (pylon) {
-                togglePylon();
-                fuel = false;
-                gwp.addPylon(e.getPoint(), this.getPylon());
-            } else {
-                select(e.getPoint(), e.isControlDown());
-            }
-        }
-
+        repaint();
     }
 
     private int getCapacity() {
@@ -149,6 +124,74 @@ public class MapView extends JPanel implements IObserver, MouseListener {
         this.repaint();
     }
 
+    public void toggleFuel() {
+        fuel = !fuel;
+    }
+
+    public void togglePylon() {
+        pylon = !pylon;
+    }
+
+    private AffineTransform worldToNDX(double width, double height, double left, double bottom) {
+        AffineTransform at = new AffineTransform();
+        at.setToIdentity();
+        at.scale(1 / width, 1 / height);
+        at.translate(-left, -bottom);
+        return at;
+    }
+
+    private AffineTransform ndToScreen(double panelWidth, double panelHeight) {
+        AffineTransform at = new AffineTransform();
+        at.setToIdentity();
+        at.translate(0, panelHeight);
+        at.scale(panelWidth, -panelHeight);
+        return at;
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Graphics2D g2d = (Graphics2D) g;
+
+        AffineTransform at = g2d.getTransform();
+        wToND = worldToNDX(right, top, left, bottom);
+        ndToScreen = ndToScreen(this.getWidth(), this.getHeight());
+        vtm = (AffineTransform) ndToScreen.clone();
+        vtm.concatenate(wToND);
+        g2d.transform(vtm);
+
+        for (Object o : gwp.getGameCollection())
+            if (o instanceof IDrawable)
+                ((IDrawable) o).draw(g);
+
+        g2d.setTransform(at);
+    }
+
+    @Override
+    public void update(IObservable gwp) {
+        this.gwp = (GameWorldProxy) gwp;
+        this.repaint();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (gwp.paused()) {
+            if (fuel) {
+                toggleFuel();
+                pylon = false;
+                gwp.addFuelCan(e.getPoint(), this.getCapacity());
+            } else if (pylon) {
+                togglePylon();
+                fuel = false;
+                gwp.addPylon(e.getPoint(), this.getPylon());
+            } else {
+                select(e.getPoint(), e.isControlDown());
+            }
+        }
+
+    }
+
     @Override
     public void mousePressed(MouseEvent e) {}
 
@@ -160,12 +203,4 @@ public class MapView extends JPanel implements IObserver, MouseListener {
 
     @Override
     public void mouseExited(MouseEvent e) {}
-
-    public void toggleFuel() {
-        fuel = !fuel;
-    }
-
-    public void togglePylon() {
-        pylon = !pylon;
-    }
 }

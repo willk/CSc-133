@@ -46,4 +46,13 @@ public interface IGameWorld {
     void crash();
 
     void death();
+
+    int getXMin();
+
+    int getXMax();
+
+    int getYMin();
+
+    int getYMax();
+
 }

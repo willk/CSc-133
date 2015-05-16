@@ -12,20 +12,19 @@ import java.awt.*;
 
 public class Game extends JFrame {
     private GameWorld gw;
+    private GameWorldProxy gwp;
     private MenuBarView mbv;
     private ButtonView bv;
     private ScoreView sv;
     private MapView mv;
-    private Dimension worldSize;
 
     public Game() {
-        worldSize = new Dimension(1100, 720);
-
         gw = new GameWorld();
+        gwp = new GameWorldProxy(gw);
         mbv = new MenuBarView();
         bv = new ButtonView();
         sv = new ScoreView();
-        mv = new MapView(worldSize);
+        mv = new MapView(gwp);
         gw.initLayout();
         gw.addObserver(mbv);
         gw.addObserver(bv);
