@@ -37,7 +37,7 @@ public class CollidePylon extends AbstractAction {
                     pylon + 1
             );
         } catch (NumberFormatException error) {
-
+            error.printStackTrace();
         }
         gameWorld.collidePylon(Integer.parseInt(newPylon));
     }

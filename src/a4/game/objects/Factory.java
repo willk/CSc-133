@@ -3,6 +3,7 @@ package a4.game.objects;
 import a4.GameWorldProxy;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
@@ -104,20 +105,20 @@ public class Factory {
 
     public void mkFuelCan(Point p, int capacity) {
         FuelCan f = new FuelCan(gwp);
-        f.setLocation(p);
+        f.setTranslate(p.x, p.y);
         f.setCapacity(capacity);
         add(f);
     }
 
     public void mkBird() {
-        add(new Bird());
+        add(new Bird(gwp));
     }
 
     public void mkOilSlick() {
-        add(new OilSlick());
+        add(new OilSlick(gwp));
     }
 
-    public void mkOilSlick(Point p) {add(new OilSlick(p));}
+    public void mkOilSlick(Point p) {add(new OilSlick(gwp, p));}
 
     private Point rPoint() {
         return new Point(r.nextInt(100), r.nextInt(100));
@@ -125,5 +126,9 @@ public class Factory {
 
     private void add(GameObject o) {
         gwp.addGameObject(o);
+    }
+
+    public void mkShockWave(Point p) {
+        add(new ShockWave(p, gwp));
     }
 }

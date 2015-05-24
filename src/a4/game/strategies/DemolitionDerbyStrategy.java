@@ -22,10 +22,10 @@ public class DemolitionDerbyStrategy implements IStrategy {
 
     @Override
     public double apply() {
-        double dy = npCar.getY() - player.getY();
-        double dx = npCar.getX() - player.getX();
+        double dy = npCar.getTranslate().getTranslateY() - player.getTranslate().getTranslateY();
+        double dx = npCar.getTranslate().getTranslateX() - player.getTranslate().getTranslateX();
 
         npCar.setHeading(Math.toDegrees(Math.atan2(dy, dx)));
-        return player.getSpeed() / 5;
+        return player.getSpeed() / 100;
     }
 }

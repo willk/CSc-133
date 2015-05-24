@@ -15,16 +15,13 @@ public class NPCar extends Car implements IDrawable {
     private IStrategy strategy;
     private GameWorldProxy gwp;
     private int uid;
-    private AffineTransform translate, rotate, scale;
 
     public NPCar(Point p, int uid, GameWorldProxy gameWorldProxy) {
         super(p);
         this.uid = uid;
         this.gwp = gameWorldProxy;
         this.changeStrategy();
-        this.translate = new AffineTransform();
-        this.rotate = new AffineTransform();
-        this.scale = new AffineTransform();
+        this.setGWP(gwp);
     }
 
     public IStrategy getStrategy() {
@@ -69,14 +66,22 @@ public class NPCar extends Car implements IDrawable {
             changeStrategy();
 
         if (time % 2 == 0) {
-            setSpeed(strategy.apply() / 5);
+            setSpeed(strategy.apply());
             super.move(time);
         }
     }
 
     @Override
-    public void draw(Graphics g) {
-        g.setColor(this.getColor());
-        g.drawRect(getX() - round(getWidth() / 2), getY() - round(getHeight() / 2), getWidth(), getHeight());
+    public void draw(Graphics2D g2d) {
+        AffineTransform at = g2d.getTransform();
+
+        g2d.transform(getTranslate());
+        g2d.transform(getRotate());
+        g2d.scale(1, -1);
+
+        g2d.setColor(this.getColor());
+        g2d.drawRect(-this.getWidth() / 2, -this.getHeight() / 2, this.getWidth(), this.getHeight());
+
+        g2d.setTransform(at);
     }
 }

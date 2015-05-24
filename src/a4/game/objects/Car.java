@@ -28,6 +28,9 @@ public class Car extends Movable implements ISteerable {
         this.setHeight(15);
 
         this.setLocation(location);
+        this.setRotate(this.getHeading());
+        this.setTranslate(getX(), getY());
+
     }
 
     public void toggleTraction() {
@@ -160,14 +163,14 @@ public class Car extends Movable implements ISteerable {
 
     @Override
     public void steerRight() {
-        if (this.getDirection() < 40)
-            this.setDirection(getDirection() + 5);
+        if (this.getDirection() > -40)
+            this.setDirection(getDirection() - 5);
     }
 
     @Override
     public void steerLeft() {
-        if (this.getDirection() > -40)
-            this.setDirection(getDirection() - 5);
+        if (this.getDirection() < 40)
+            this.setDirection(getDirection() + 5);
     }
 
     @Override
@@ -176,22 +179,28 @@ public class Car extends Movable implements ISteerable {
         // if object is in the list of objects that we are currently colliding with
         // and the object has not already been hit.
         if (getCollisionMap().containsKey(obj) && !getCollisionMap().get(obj)) {
-            // Change the inHit value.
+            // Change the hit value.
             inHit(obj);
 
             if (obj instanceof Bird) {
                 this.hit(5);
+                if (this instanceof Player && (r.nextInt(10) > 5)) getGWP().addShockWave(new Point(round(getTranslate().getTranslateX()), round(getTranslate().getTranslateY())));
             }
             if (obj instanceof FuelCan) {
                 this.addFuel(((FuelCan) obj).getCapacity());
-                getGWP().slurp();
+                if (obj instanceof Player)
+                    getGWP().slurp();
             }
             if (obj instanceof Car) {
                 this.hit(10);
                 if (this instanceof Player) {
                     getGWP().crash();
+                    if( (r.nextInt(10) > 5)) getGWP().addShockWave(new Point(round(getTranslate().getTranslateX()), round(getTranslate().getTranslateY())));
                     if (r.nextInt(100) < 20) {
-                        getGWP().addOilSlick((Point) ((Car) obj).getLocation().clone());
+                        getGWP().addOilSlick(
+                                new Point(
+                                        round(this.getTranslate().getTranslateX()),
+                                        round(this.getTranslate().getTranslateY())));
                     }
                 }
             }
@@ -201,8 +210,9 @@ public class Car extends Movable implements ISteerable {
             }
 
             if (obj instanceof Pylon)
-                if (((Pylon) obj).getSequenceNumber() == this.pylon + 1)
-                    pylon++;
+                if (((Pylon) obj).getSequenceNumber() == this.pylon) {
+                    this.pylon++;
+                }
 
             if (this.getDamage() > 100) {
                 if (this instanceof Player) {

@@ -6,25 +6,21 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class FuelCan extends Fixed implements IDrawable, ISelectable {
-    private int size, capacity;
-    private boolean firstDraw, selected;
-    private Point cp, tp;
-    private AffineTransform translate, rotate, scale;
+    private int size;
+    private int capacity;
+    private boolean selected;
 
     public FuelCan(GameWorldProxy gwp) {
         // When instantiating a fuel can make sure th value is between %5 and %30
+        setGWP(gwp);
         this.setColor(Color.red);
         this.setLocation();
         this.capacity = r.nextInt(25) + 10;
         this.size = 20;
         this.setWidth(size);
         this.setHeight(size);
-        this.firstDraw = true;
         this.selected = false;
-        setGWP(gwp);
-        this.translate = new AffineTransform();
-        this.rotate = new AffineTransform();
-        this.scale = new AffineTransform();
+        this.setTranslate(this.getLocation().getX(), this.getLocation().getY());
     }
 
 
@@ -61,37 +57,37 @@ public class FuelCan extends Fixed implements IDrawable, ISelectable {
     public boolean contains(Point p) {
         Rectangle r = new Rectangle(
                 centerObject(
-                        this.getX(),
-                        this.getY(),
+                        round(this.getTranslate().getTranslateX()),
+                        round(this.getTranslate().getTranslateY()),
                         this.getWidth(),
                         this.getHeight()),
                 new Dimension(this.getWidth(), this.getHeight()));
 
         return r.contains(p);
-
     }
 
     @Override
-    public void draw(Graphics g) {
-        if (firstDraw) {
-            cp = centerObject(getX(), getY(), getSize(), getSize());
-            tp = centerText(size, size, size, g);
-            firstDraw = false;
-        }
+    public void draw(Graphics2D g2d) {
+        AffineTransform at = g2d.getTransform();
+
+        g2d.transform(getTranslate());
+        g2d.scale(1, -1);
 
         if (!selected) {
-            g.setColor(this.getColor());
-            g.fillRect(round(cp.getX()), round(cp.getY()), round(getSize()), round(getSize()));
+            g2d.setColor(this.getColor());
+            g2d.fillRect(-getWidth()/2, -getHeight()/2, getSize(), getSize());
 
-            g.setColor(invertColor(this.getColor()));
-            g.drawString(Integer.toString(getCapacity()), round(tp.getX() + cp.getX()), round(tp.getY() + cp.getY()));
+            g2d.setColor(invertColor(this.getColor()));
+            g2d.drawString(Integer.toString(getCapacity()), 0, 0);
         } else {
-            g.setColor(invertColor(this.getColor()));
-            g.fillRect(round(cp.getX()), round(cp.getY()), round(getSize()), round(getSize()));
+            g2d.setColor(invertColor(this.getColor()));
+            g2d.fillRect(-getWidth()/2, -getHeight()/2, getSize(), getSize());
 
-            g.setColor(this.getColor());
-            g.drawString(Integer.toString(getCapacity()), round(tp.getX() + cp.getX()), round(tp.getY() + cp.getY()));
+            g2d.setColor(this.getColor());
+            g2d.drawString(Integer.toString(getCapacity()), 0, 0);
         }
+
+        g2d.setTransform(at);
     }
 
     @Override

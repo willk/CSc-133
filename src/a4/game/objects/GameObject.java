@@ -1,9 +1,9 @@
 package a4.game.objects;
 
-
 import a4.GameWorldProxy;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Random;
@@ -11,15 +11,42 @@ import java.util.Random;
 public abstract class GameObject implements Collider {
     Random r = new Random(System.nanoTime());
 
-    protected final int _xMax = 1100;
-    protected final int _yMax = 720;
-
+    private GameWorldProxy gwp;
+    private AffineTransform rotate = new AffineTransform();
+    private AffineTransform scale = new AffineTransform();
+    private AffineTransform translate = new AffineTransform();
     private Point location;
     private Color color;
-    private int height;
-    private int width;
-    private GameWorldProxy gwp;
+    private int height, width;
     private HashMap<Collider, Boolean> collisionMap = new HashMap<Collider, Boolean>();
+
+    public AffineTransform getRotate() {
+        return rotate;
+    }
+
+    public void setRotate(double d) {
+        AffineTransform at = new AffineTransform();
+        at.rotate(Math.toRadians(d));
+        this.rotate = at;
+    }
+
+    public AffineTransform getScale() {
+        return scale;
+    }
+
+    public void setScale(AffineTransform scale) {
+        this.scale = scale;
+    }
+
+    public AffineTransform getTranslate() {
+        return translate;
+    }
+
+    public void setTranslate(double x, double y) {
+        AffineTransform at = new AffineTransform();
+        at.translate(x, y);
+        this.translate = at;
+    }
 
     public GameWorldProxy getGWP() {
         return gwp;
@@ -50,7 +77,7 @@ public abstract class GameObject implements Collider {
     }
 
     public void setLocation() {
-        this.location = new Point(r.nextInt(_xMax), r.nextInt(_yMax));
+        this.location = new Point(r.nextInt((int)gwp.getRight()), r.nextInt((int)gwp.getTop()));
     }
 
     public void setLocation(Point p) {
@@ -93,7 +120,7 @@ public abstract class GameObject implements Collider {
         this.color = color;
     }
 
-    public Point centerText(String s, int x, int y, Graphics g) {
+    public Point centerText(String s, int x, int y, Graphics2D g) {
         FontMetrics fm = g.getFontMetrics();
         Rectangle2D r = fm.getStringBounds(s, g);
 
@@ -105,7 +132,7 @@ public abstract class GameObject implements Collider {
         return new Point(x - round(width / 2), y - round(length / 2));
     }
 
-    public Point centerText(int s, int x, int y, Graphics g) {
+    public Point centerText(int s, int x, int y, Graphics2D g) {
         FontMetrics fm = g.getFontMetrics();
         Rectangle2D r = fm.getStringBounds(Integer.toString(s), g);
 
@@ -123,16 +150,16 @@ public abstract class GameObject implements Collider {
     public boolean collidesWith(Collider obj) {
         Rectangle r1 = new Rectangle(
                 centerObject(
-                        this.getX(),
-                        this.getY(),
+                        round(this.getTranslate().getTranslateX()),
+                        round(this.getTranslate().getTranslateY()),
                         this.getWidth(),
                         this.getHeight()),
                 new Dimension(getWidth(), getHeight()));
 
         Rectangle r2 = new Rectangle(
                 centerObject(
-                        ((GameObject) obj).getX(),
-                        ((GameObject) obj).getY(),
+                        round(((GameObject) obj).getTranslate().getTranslateX()),
+                        round(((GameObject) obj).getTranslate().getTranslateY()),
                         ((GameObject) obj).getWidth(),
                         ((GameObject) obj).getHeight()),
                 new Dimension(((GameObject) obj).getWidth(), ((GameObject) obj).getHeight()));

@@ -47,12 +47,21 @@ public interface IGameWorld {
 
     void death();
 
-    int getXMin();
+    double getLeft();
 
-    int getXMax();
+    double getRight();
 
-    int getYMin();
+    double getBottom();
 
-    int getYMax();
+    double getTop();
 
+    void setRight(double d);
+
+    void setLeft(double d);
+
+    void setTop(double d);
+
+    void setBottom(double d);
+
+    void addShockWave(Point p);
 }

@@ -6,10 +6,11 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class Pylon extends Fixed implements IDrawable, ISelectable {
-    private int radius, sequenceNumber;
-    private boolean firstDraw, selected;
+    private int radius;
+    private int sequenceNumber;
+    private boolean firstDraw;
     private Point cp, tp;
-    private AffineTransform translate, rotate, scale;
+    private boolean selected;
 
     public Pylon(int number, GameWorldProxy gwp) {
         this.setLocation();
@@ -27,11 +28,9 @@ public class Pylon extends Fixed implements IDrawable, ISelectable {
         this.setColor(Color.orange);
         this.setSequenceNumber(number);
         this.setGWP(gwp);
+        this.setTranslate(this.getLocation().getX(), this.getLocation().getY());
         this.firstDraw = true;
         this.selected = false;
-        this.translate = new AffineTransform();
-        this.rotate = new AffineTransform();
-        this.scale = new AffineTransform();
     }
 
     public void setColor() {
@@ -87,26 +86,27 @@ public class Pylon extends Fixed implements IDrawable, ISelectable {
     }
 
     @Override
-    public void draw(Graphics g) {
-        if (firstDraw) {
-            cp = new Point(getX() - round(getRadius() / 2), getY() - round(getRadius() / 2));
-            tp = centerText(sequenceNumber, round(getRadius()), round(getRadius()), g);
-            firstDraw = false;
-        }
+    public void draw(Graphics2D g2d) {
+        AffineTransform at = g2d.getTransform();
+
+        g2d.transform(getTranslate());
+        g2d.scale(1, -1);
+
 
         if (!selected) {
-            g.setColor(this.getColor());
-            g.fillOval(round(cp.getX()), round(cp.getY()), round(getRadius()), round(getRadius()));
+            g2d.setColor(this.getColor());
+            g2d.fillOval(-getWidth() / 2, -getHeight() / 2, getWidth(), getHeight());
 
-            g.setColor(invertColor(this.getColor()));
-            g.drawString(Integer.toString(sequenceNumber), round(tp.getX() + cp.getX()), round(tp.getY() + cp.getY()));
+            g2d.setColor(invertColor(this.getColor()));
+            g2d.drawString(Integer.toString(sequenceNumber), 0, 0);
         } else {
-            g.setColor(invertColor(this.getColor()));
-            g.fillOval(round(cp.getX()), round(cp.getY()), round(getRadius()), round(getRadius()));
+            g2d.setColor(invertColor(this.getColor()));
+            g2d.fillOval(-getWidth() / 2, -getHeight() / 2, round(getRadius()), round(getRadius()));
 
-            g.setColor(this.getColor());
-            g.drawString(Integer.toString(sequenceNumber), round(tp.getX() + cp.getX()), round(tp.getY() + cp.getY()));
+            g2d.setColor(this.getColor());
+            g2d.drawString(Integer.toString(sequenceNumber), 0, 0);
         }
 
+        g2d.setTransform(at);
     }
 }

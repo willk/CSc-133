@@ -20,11 +20,6 @@ public class GameWorldProxy implements IGameWorld, IObservable {
         gameWorld.addToGraveyard(o);
     }
 
-//    @Override
-//    public Player getPlayer() {
-//        return gameWorld.getPlayer();
-//    }
-
     @Override
     public boolean paused() {
         return gameWorld.paused();
@@ -56,23 +51,48 @@ public class GameWorldProxy implements IGameWorld, IObservable {
     }
 
     @Override
-    public int getXMin() {
-        return gameWorld.getXMin();
+    public double getLeft() {
+        return gameWorld.getLeft();
     }
 
     @Override
-    public int getXMax() {
-        return gameWorld.getXMax();
+    public double getRight() {
+        return gameWorld.getRight();
     }
 
     @Override
-    public int getYMin() {
-        return gameWorld.getYMin();
+    public double getBottom() {
+        return gameWorld.getBottom();
     }
 
     @Override
-    public int getYMax() {
-        return gameWorld.getYMin();
+    public double getTop() {
+        return gameWorld.getTop();
+    }
+
+    @Override
+    public void setRight(double d) {
+        gameWorld.setRight(d);
+    }
+
+    @Override
+    public void setLeft(double d) {
+        gameWorld.setLeft(d);
+    }
+
+    @Override
+    public void setTop(double d) {
+        gameWorld.setTop(d);
+    }
+
+    @Override
+    public void setBottom(double d) {
+        gameWorld.setBottom(d);
+    }
+
+    @Override
+    public void addShockWave(Point p) {
+        gameWorld.addShockWave(p);
     }
 
     @Override

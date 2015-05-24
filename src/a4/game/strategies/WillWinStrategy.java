@@ -6,8 +6,6 @@ import a4.game.objects.NPCar;
 import a4.game.objects.Player;
 import a4.game.objects.Pylon;
 
-import java.awt.*;
-
 
 /**
  * Created by William Kinderman on 3/17/15, 9:18 PM.
@@ -15,19 +13,19 @@ import java.awt.*;
 public class WillWinStrategy implements IStrategy {
     private final GameWorldProxy gameWorldProxy;
     private NPCar npCar;
-    private Point pylon;
+    private Pylon pylon;
 
     public WillWinStrategy(NPCar npCar, GameWorldProxy gameWorldProxy) {
         this.npCar = npCar;
         this.gameWorldProxy = gameWorldProxy;
-        this.getPylonLocation();
+        this.getPylon();
     }
 
-    private void getPylonLocation() {
+    private void getPylon() {
         for (GameObject go : gameWorldProxy.getGameCollection())
             if (go instanceof Pylon)
                 if (((Pylon) go).getSequenceNumber() == npCar.getPylon())
-                    pylon = go.getLocation();
+                    pylon = (Pylon) go;
     }
 
     private double getPlayerSpeed() {
@@ -40,13 +38,14 @@ public class WillWinStrategy implements IStrategy {
 
     @Override
     public double apply() {
-        getPylonLocation();
+        getPylon();
 
-        double dy = npCar.getY() - pylon.getY();
-        double dx = npCar.getX() - pylon.getX();
+        double dy = npCar.getTranslate().getTranslateY() - pylon.getTranslate().getTranslateY();
+        double dx = npCar.getTranslate().getTranslateX() - pylon.getTranslate().getTranslateX();
 
 
         npCar.setHeading(Math.toDegrees(Math.atan2(dy, dx)));
-        return getPlayerSpeed() / 5;
+
+        return getPlayerSpeed() / 100;
     }
 }

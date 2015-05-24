@@ -12,5 +12,5 @@ public interface ISelectable {
 
     boolean contains(Point p);
 
-    void draw(Graphics g);
+    void draw(Graphics2D g2d);
 }

@@ -10,36 +10,39 @@ import a4.game.objects.ISelectable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 
 /**
  * Created by William Kinderman on 3/14/15, 6:45 PM, 6:45 PM.
  */
-public class MapView extends JPanel implements IObserver, MouseListener {
+public class MapView extends JPanel implements IObserver, MouseListener, MouseMotionListener, MouseWheelListener {
+    private double worldLeft, worldRight, worldTop, worldBottom;
+    AffineTransform inverse;
     GameWorldProxy gwp;
     Boolean fuel, pylon;
 
-    int left, right, top, bottom;
-    AffineTransform wToND, ndToScreen, vtm;
-
     public MapView(GameWorldProxy gwp) {
-        this.gwp = gwp;
 
         this.fuel = false;
         this.pylon = false;
-
-        left = gwp.getXMin();
-        right = gwp.getXMax();
-        top = gwp.getYMax();
-        bottom = gwp.getYMin();
-
+        this.gwp = gwp;
         this.setLayout(new BorderLayout());
         this.setBackground(Color.white);
-        this.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, new Color(66, 11, 127)));
         this.addMouseListener(this);
+        this.addMouseWheelListener(this);
+        this.addMouseMotionListener(this);
+
+        worldLeft = gwp.getLeft();
+        worldRight = gwp.getRight();
+        worldTop = gwp.getTop();
+        worldBottom = gwp.getBottom();
+
+        inverse = new AffineTransform();
+
+        // AT stuffs:
 
         // Create key maps.
         InputMap inputMap = this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -64,8 +67,6 @@ public class MapView extends JPanel implements IObserver, MouseListener {
         actionMap.put(KeyEvent.VK_RIGHT, TurnRight.getInstance());
         actionMap.put(KeyEvent.VK_T, Tick.getInstance());
         actionMap.put(KeyEvent.VK_DELETE, Delete.getInstance());
-
-        repaint();
     }
 
     private int getCapacity() {
@@ -76,7 +77,7 @@ public class MapView extends JPanel implements IObserver, MouseListener {
                     "Enter the capacity of the fuel can."
             );
         } catch (NumberFormatException error) {
-            System.out.println(error);
+            error.printStackTrace();
         }
 
         return Integer.parseInt(s);
@@ -93,13 +94,19 @@ public class MapView extends JPanel implements IObserver, MouseListener {
                     pylon + 1
             );
         } catch (NumberFormatException error) {
-            System.out.println(error);
+            error.printStackTrace();
         }
 
         return Integer.parseInt(newPylon);
     }
 
+    private Point p2p(Point2D p) {
+        return new Point((int) Math.round(p.getX()), (int) Math.round(p.getY()));
+    }
+
     private void select(Point p, boolean controlDown) {
+
+        p = p2p(inverse.transform(p, null));
 
         if (controlDown) {
             for (GameObject o : gwp.getGameCollection()) {
@@ -132,40 +139,46 @@ public class MapView extends JPanel implements IObserver, MouseListener {
         pylon = !pylon;
     }
 
-    private AffineTransform worldToNDX(double width, double height, double left, double bottom) {
+    public AffineTransform WorldToND() {
         AffineTransform at = new AffineTransform();
         at.setToIdentity();
-        at.scale(1 / width, 1 / height);
-        at.translate(-left, -bottom);
+        at.scale(1 / (worldRight - worldLeft), 1 / (worldTop - worldBottom));
+        at.translate(-worldLeft, -worldBottom);
         return at;
     }
 
-    private AffineTransform ndToScreen(double panelWidth, double panelHeight) {
+    public AffineTransform NDToScreen() {
         AffineTransform at = new AffineTransform();
         at.setToIdentity();
-        at.translate(0, panelHeight);
-        at.scale(panelWidth, -panelHeight);
+        at.translate(0, this.getHeight());
+        at.scale(this.getWidth(), -this.getHeight());
         return at;
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         Graphics2D g2d = (Graphics2D) g;
 
         AffineTransform at = g2d.getTransform();
-        wToND = worldToNDX(right, top, left, bottom);
-        ndToScreen = ndToScreen(this.getWidth(), this.getHeight());
-        vtm = (AffineTransform) ndToScreen.clone();
+
+        AffineTransform wToND = WorldToND();
+        AffineTransform nDToS = NDToScreen();
+        AffineTransform vtm = (AffineTransform) nDToS.clone();
         vtm.concatenate(wToND);
         g2d.transform(vtm);
 
+        try {
+            inverse = vtm.createInverse();
+        } catch (NoninvertibleTransformException e) {
+            e.printStackTrace();
+        }
+
         for (Object o : gwp.getGameCollection())
             if (o instanceof IDrawable)
-                ((IDrawable) o).draw(g);
+                ((IDrawable) o).draw(g2d);
 
-        g2d.setTransform(at);
+        g2d.transform(at);
     }
 
     @Override
@@ -180,16 +193,16 @@ public class MapView extends JPanel implements IObserver, MouseListener {
             if (fuel) {
                 toggleFuel();
                 pylon = false;
-                gwp.addFuelCan(e.getPoint(), this.getCapacity());
+                gwp.addFuelCan(p2p(inverse.transform(e.getPoint(), null)), this.getCapacity());
             } else if (pylon) {
                 togglePylon();
                 fuel = false;
-                gwp.addPylon(e.getPoint(), this.getPylon());
+                gwp.addPylon(p2p(inverse.transform(e.getPoint(), null)), this.getPylon());
             } else {
                 select(e.getPoint(), e.isControlDown());
             }
         }
-
+        repaint();
     }
 
     @Override
@@ -203,4 +216,59 @@ public class MapView extends JPanel implements IObserver, MouseListener {
 
     @Override
     public void mouseExited(MouseEvent e) {}
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        // pan
+        Point oldP = this.getMousePosition();
+        Point newP = p2p(inverse.transform(e.getPoint(), null));
+
+        if (!gwp.paused()) {
+            if (newP != null && oldP != null) {
+                double x = oldP.getX() - newP.getX();
+                double y = oldP.getY() - newP.getY();
+                worldLeft += x * 0.25;
+                worldRight += x * 0.25;
+                worldTop += y * 0.25;
+                worldBottom += y * 0.25;
+
+                gwp.setBottom(worldBottom);
+                gwp.setTop(worldTop);
+                gwp.setLeft(worldLeft);
+                gwp.setRight(worldRight);
+
+                this.repaint();
+            }
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {}
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        double height = worldTop - worldBottom;
+        double width = worldRight - worldLeft;
+
+        if (!gwp.paused()) {
+            if (e.getWheelRotation() < 0) {
+                worldLeft += width * 0.05;
+                worldRight -= width * 0.05;
+                worldTop -= height * 0.05;
+                worldBottom += height * 0.05;
+            } else {
+                worldLeft -= width * 0.05;
+                worldRight += width * 0.05;
+                worldTop += height * 0.05;
+                worldBottom -= height * 0.05;
+            }
+
+            gwp.setBottom(worldBottom);
+            gwp.setTop(worldTop);
+            gwp.setLeft(worldLeft);
+            gwp.setRight(worldRight);
+
+            repaint();
+        }
+    }
 }

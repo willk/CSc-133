@@ -35,5 +35,6 @@ public class AddFuelCan extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         mv.toggleFuel();
+        gameWorld.notifyObservers();
     }
 }

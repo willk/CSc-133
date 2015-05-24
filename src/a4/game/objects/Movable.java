@@ -1,26 +1,19 @@
 package a4.game.objects;
 
-
-import java.awt.*;
-
 public abstract class Movable extends GameObject {
 
     private double speed;
     private double heading;
 
-
     public void move(double time) {
         double theta;
-        if (getX() <= 0 || getX() > 1100 || getY() <= 0 || getY() > 720)
-            this.setHeading(this.getHeading() + 90);
+
         theta = Math.toRadians(getHeading() + 180);
 
-        double dx = Math.cos(theta) * (this.getSpeed());
-        double dy = Math.sin(theta) * (this.getSpeed());
+        double dx = Math.cos(theta) * (this.getSpeed() / 10);
+        double dy = Math.sin(theta) * (this.getSpeed() / 10);
 
-        Point p = this.getLocation();
-        p.translate(round(dx / 5), round(dy / 5));
-        this.setLocation(p);
+        getTranslate().translate(dx, dy);
     }
 
     public double getSpeed() {
@@ -37,6 +30,7 @@ public abstract class Movable extends GameObject {
 
     public void setHeading(double heading) {
         this.heading = (heading % 360 + 360) % 360;
+        this.setRotate(this.heading);
     }
 
     @Override

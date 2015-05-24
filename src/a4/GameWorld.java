@@ -13,9 +13,8 @@ import java.util.Random;
 import java.util.Stack;
 
 public class GameWorld implements IGameWorld, IObservable, ActionListener {
-
     private final String version = "2.0";
-    private double time;
+    private double time, worldLeft, worldRight, worldBottom, worldTop;
     private Timer timer;
     private int lives;
     private Object temp;
@@ -28,10 +27,12 @@ public class GameWorld implements IGameWorld, IObservable, ActionListener {
     private Audio theme, crash, slurp, death;
     private Stack<GameObject> graveyard;
 
-    private static final int xmin = 0;
-    private static final int xmax = 1141;
-    private static final int ymin = 0;
-    private static final int ymax = 730;
+    public GameWorld() {
+        worldLeft = 0;
+        worldRight = 1280;
+        worldBottom = 0;
+        worldTop = 720;
+    }
 
     public void initLayout() {
 
@@ -116,23 +117,48 @@ public class GameWorld implements IGameWorld, IObservable, ActionListener {
     }
 
     @Override
-    public int getXMin() {
-        return xmin;
+    public double getLeft() {
+        return worldLeft;
     }
 
     @Override
-    public int getXMax() {
-        return xmax;
+    public double getRight() {
+        return worldRight;
     }
 
     @Override
-    public int getYMin() {
-        return ymin;
+    public double getBottom() {
+        return worldBottom;
     }
 
     @Override
-    public int getYMax() {
-        return ymax;
+    public double getTop() {
+        return worldTop;
+    }
+
+    @Override
+    public void setRight(double d) {
+        worldRight = d;
+    }
+
+    @Override
+    public void setLeft(double d) {
+        worldLeft = d;
+    }
+
+    @Override
+    public void setTop(double d) {
+        worldTop = d;
+    }
+
+    @Override
+    public void setBottom(double d) {
+        worldBottom = d;
+    }
+
+    @Override
+    public void addShockWave(Point p) {
+        f.mkShockWave(p);
     }
 
     public void initAudio() {
@@ -171,7 +197,7 @@ public class GameWorld implements IGameWorld, IObservable, ActionListener {
          * Oil slicks have random size and location.
          */
 
-        go.add(new OilSlick());
+        f.mkOilSlick();
 
         notifyObservers();
     }
